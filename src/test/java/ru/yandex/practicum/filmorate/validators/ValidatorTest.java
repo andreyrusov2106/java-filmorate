@@ -61,7 +61,7 @@ class ValidatorTest {
 
     @Test
     void validateUserWithEmptyEmail() {
-        User u = new User(1,"", "login", "name", LocalDate.now().minusYears(20));
+        User u = new User(1L,"", "login", "name", LocalDate.now().minusYears(20));
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateUser(u)
@@ -71,7 +71,7 @@ class ValidatorTest {
 
     @Test
     void validateUserWithEmptyLogin() {
-        User u = new User(1,"email", "", "name", LocalDate.now().minusYears(20));
+        User u = new User(1L,"email", "", "name", LocalDate.now().minusYears(20));
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateUser(u)
@@ -81,7 +81,7 @@ class ValidatorTest {
 
     @Test
     void validateUserWithBirthdayAfterNow() {
-        User u = new User(1,"email", "login", "name", LocalDate.now().plusYears(20));
+        User u = new User(1L,"email", "login", "name", LocalDate.now().plusYears(20));
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateUser(u)
