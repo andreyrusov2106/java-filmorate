@@ -1,7 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
+import ru.yandex.practicum.filmorate.model.enums.Genre;
+import ru.yandex.practicum.filmorate.model.enums.Rating;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Film {
@@ -11,6 +16,8 @@ public class Film {
     private LocalDate releaseDate;
     private Long duration;
     private final Set<Long> likes = new HashSet<>();
+    private final List<Genre> genres = new ArrayList<>();
+    private Rating rating;
 
     public Film(long id, String name, String description, LocalDate releaseDate, Long duration) {
         this.id = id;

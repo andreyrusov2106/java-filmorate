@@ -1,7 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
+import ru.yandex.practicum.filmorate.model.enums.FriendshipConfirmation;
+
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -11,10 +15,11 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private final Set<Long> friends = new HashSet<>();
+    private final Map<Long, FriendshipConfirmation> friends = new HashMap<>();
 
     public Set<Long> getFriends() {
-        return friends;
+
+        return friends.keySet();
     }
 
 
@@ -27,7 +32,11 @@ public class User {
     }
 
     public void addFriend(long id) {
-        friends.add(id);
+        friends.put(id, FriendshipConfirmation.UNCONFIRMED);
+    }
+
+    public void confirmFriend(long id) {
+        friends.put(id, FriendshipConfirmation.CONFIRMED);
     }
 
     public void removeFriend(long id) {
