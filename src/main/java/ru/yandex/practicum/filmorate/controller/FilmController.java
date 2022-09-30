@@ -1,64 +1,57 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.FilmAlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static ru.yandex.practicum.filmorate.validators.Validator.validateFilm;
 
 @Slf4j
 @RestController
 public class FilmController {
-    private static int currentId;
-    private final Map<Integer, Film> films = new HashMap<>();
+
+    private final FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping("/films")
     public List<Film> findAll() {
-        return new ArrayList<>(films.values());
+        return filmService.findAll();
     }
 
     @PostMapping(value = "/films")
     public Film create(@RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            log.warn("FilmAlreadyExist");
-            throw new FilmAlreadyExistException("FilmAlreadyExist");
-        }
-        try {
-            validateFilm(film);
-        } catch (ValidationException exception) {
-            log.warn(exception.getMessage());
-            throw exception;
-        }
-        currentId++;
-        film.setId(currentId);
-        films.put(film.getId(), film);
-        log.info("Film created" + film);
-        return film;
+        return filmService.create(film);
     }
 
     @PutMapping(value = "/films")
     public Film update(@RequestBody Film film) {
-        try {
-            validateFilm(film);
-        } catch (ValidationException exception) {
-            log.warn(exception.getMessage());
-            throw exception;
-        }
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-            log.info("Film updated" + film);
-        } else {
-            log.info("Film not found" + film);
-            throw new ResourceNotFoundException("Film not found");
-        }
-        return film;
+        return filmService.update(film);
     }
+
+    @PutMapping(value = "/films/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping(value = "/films/{id}/like/{userId}")
+    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping(value = "/films/popular")
+    public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") int count) {
+        return filmService.getPopularFilms(count);
+    }
+
+    @GetMapping(value = "/films/{id}")
+    public Film getFilm(@PathVariable Long id) {
+        return filmService.getFilm(id);
+    }
+
 }
