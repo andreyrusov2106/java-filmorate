@@ -1,81 +1,53 @@
 package ru.yandex.practicum.filmorate.model;
 
-import ru.yandex.practicum.filmorate.model.enums.Genre;
-import ru.yandex.practicum.filmorate.model.enums.Rating;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+@Data
+@AllArgsConstructor
+@Builder
 public class Film {
+    @NotNull
     private long id;
+    @NotNull
     private String name;
+    @NotNull
     private String description;
+    @NotNull
     private LocalDate releaseDate;
+    @NotNull
     private Long duration;
-    private final Set<Long> likes = new HashSet<>();
-    private final List<Genre> genres = new ArrayList<>();
-    private Rating rating;
+    @NotNull
+    private Integer rate;
+    private final Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
+    private final Set<Long> likes = new TreeSet<>();
+    @NotNull
+    private Mpa mpa;
 
-    public Film(long id, String name, String description, LocalDate releaseDate, Long duration) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("name", name);
+        values.put("description", description);
+        values.put("release_date", releaseDate);
+        values.put("duration", duration);
+        values.put("rating_id", mpa == null ? null : mpa.getId());
+        return values;
     }
 
-    public void addLike(long id) {
-        likes.add(id);
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+    public void addLike(long idUser) {
+        likes.add(idUser);
+    }
+    public void removeLike(long idUser) {
+        likes.remove(idUser);
     }
 
-    public void removeLike(long id) {
-        likes.remove(id);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public Long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Long duration) {
-        this.duration = duration;
-    }
-
-    public Set<Long> getLikes() {
-        return likes;
-    }
 }

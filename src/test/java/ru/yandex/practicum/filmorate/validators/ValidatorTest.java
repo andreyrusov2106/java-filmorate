@@ -15,10 +15,16 @@ class ValidatorTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
+
     @Test
     void validateFilmWithEmptyName() {
-
-        Film f = new Film(1, "", "desc", LocalDate.now(), 1000L);
+        Film f = Film.builder()
+                .id(1)
+                .name("")
+                .description("description")
+                .releaseDate(LocalDate.now())
+                .duration(1000L)
+                .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateFilm(f)
@@ -29,7 +35,13 @@ class ValidatorTest {
     @Test
     void validateFilmWithDescriptionLongerThan200() {
 
-        Film f = new Film(1, "name", LENGTH_201, LocalDate.now(), 1000L);
+        Film f  = Film.builder()
+                .id(1)
+                .name("name")
+                .description(LENGTH_201)
+                .releaseDate(LocalDate.now())
+                .duration(1000L)
+                .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateFilm(f)
@@ -40,7 +52,13 @@ class ValidatorTest {
     @Test
     void validateFilmWithReleaseDateBefore28Dec1895() {
 
-        Film f = new Film(1, "name", "description", LocalDate.now().minusYears(200), 1000L);
+        Film f  = Film.builder()
+                .id(1)
+                .name("name")
+                .description("description")
+                .releaseDate(LocalDate.now().minusYears(200))
+                .duration(1000L)
+                .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateFilm(f)
@@ -51,7 +69,13 @@ class ValidatorTest {
     @Test
     void validateFilmWithNegativeDuration() {
 
-        Film f = new Film(1, "name", "description", LocalDate.now(), -1L);
+        Film f  = Film.builder()
+                .id(1)
+                .name("name")
+                .description("description")
+                .releaseDate(LocalDate.now())
+                .duration(-1000L)
+                .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateFilm(f)
@@ -61,7 +85,13 @@ class ValidatorTest {
 
     @Test
     void validateUserWithEmptyEmail() {
-        User u = new User(1L,"", "login", "name", LocalDate.now().minusYears(20));
+        User u = User.builder()
+                .id(1L)
+                .email("")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusYears(20))
+                .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateUser(u)
@@ -71,7 +101,13 @@ class ValidatorTest {
 
     @Test
     void validateUserWithEmptyLogin() {
-        User u = new User(1L,"email", "", "name", LocalDate.now().minusYears(20));
+        User u = User.builder()
+                .id(1L)
+                .email("email")
+                .login("")
+                .name("name")
+                .birthday(LocalDate.now().minusYears(20))
+                .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateUser(u)
@@ -81,7 +117,13 @@ class ValidatorTest {
 
     @Test
     void validateUserWithBirthdayAfterNow() {
-        User u = new User(1L,"email", "login", "name", LocalDate.now().plusYears(20));
+        User u = User.builder()
+                .id(1L)
+                .email("email")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().plusYears(20))
+                .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> Validator.validateUser(u)
