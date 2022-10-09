@@ -229,7 +229,9 @@ class FilmorateApplicationTest {
     @Test
     public void testGetMpa() {
         var mpa=mpaStorage.getMpa(1);
-        assertThat(mpa).hasFieldOrPropertyWithValue("name", "G");
+        assertThat(mpa).isPresent().hasValueSatisfying(mpa1 ->
+                assertThat(mpa1).hasFieldOrPropertyWithValue("name", "G")
+        );
     }
     //LikeTests
     @Test

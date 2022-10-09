@@ -7,9 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Genre;
 
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component()
@@ -35,11 +38,11 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public Genre getGenre(long idGenre) {
+    public Optional<Genre> getGenre(long idGenre) {
         try {
-            return jdbcTemplate.queryForObject(SELECT_GENRE_BY_ID_SQL, this::mapRowToGenre, idGenre);
+            return Optional.of(jdbcTemplate.queryForObject(SELECT_GENRE_BY_ID_SQL, this::mapRowToGenre, idGenre));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -48,7 +51,7 @@ public class GenreDbStorage implements GenreStorage {
         try {
             return jdbcTemplate.query(SELECT_FILM_GENRE_SQL, this::mapRowToGenre, idFilm);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -60,16 +63,16 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public void addFilmGenre(long film_id, long genre_id) {
+    public void addFilmGenre(long idFilm, long idGenre) {
         jdbcTemplate.update(INSERT_FILM_GENRE_SQL,
-                film_id,
-                genre_id);
+                idFilm,
+                idGenre);
     }
 
     @Override
-    public void removeFilmAllGenre(long film_id) {
+    public void removeFilmAllGenre(long idFilm) {
         jdbcTemplate.update(DELETE_FILM_GENRE_SQL,
-                film_id);
+                idFilm);
     }
 
 }

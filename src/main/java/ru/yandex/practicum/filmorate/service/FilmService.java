@@ -8,8 +8,8 @@ import ru.yandex.practicum.filmorate.exceptions.FilmAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
@@ -53,7 +53,7 @@ public class FilmService {
             log.warn(exception.getMessage());
             throw exception;
         }
-        if (mpaDbStorage.getMpa(film.getMpa().getId()) == null) {
+        if (mpaDbStorage.getMpa(film.getMpa().getId()).isEmpty()) {
             log.warn("Mpa with id=" + film.getMpa().getId() + " not found");
             throw new ResourceNotFoundException("Mpa not found");
         }
@@ -61,7 +61,7 @@ public class FilmService {
         if (film.getGenres() != null) {
             genreDbStorage.removeFilmAllGenre(film.getId());
             film.getGenres()
-                    .forEach(genre_id -> genreDbStorage.addFilmGenre(film.getId(), genre_id.getId()));
+                    .forEach((Genre idGenre) -> genreDbStorage.addFilmGenre(film.getId(), idGenre.getId()));
         }
         log.info("Film created" + film);
         return createdFilm;
@@ -80,9 +80,9 @@ public class FilmService {
             if (film.getGenres() != null) {
                 genreDbStorage.removeFilmAllGenre(film.getId());
                 film.getGenres()
-                        .forEach(genre_id -> genreDbStorage.addFilmGenre(film.getId(), genre_id.getId()));
+                        .forEach(idGenre -> genreDbStorage.addFilmGenre(film.getId(), idGenre.getId()));
                 updatedFilm.getGenres()
-                        .forEach(genre -> genre.setName(genreDbStorage.getGenre(genre.getId()).getName()));
+                        .forEach(genre -> genre.setName(genreDbStorage.getGenre(genre.getId()).orElseThrow().getName()));
             }
             log.info("Film updated" + film);
         } else {

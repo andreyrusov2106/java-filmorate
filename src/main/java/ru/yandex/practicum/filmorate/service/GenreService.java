@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -18,16 +19,16 @@ public class GenreService {
     public GenreService(GenreDbStorage genreDbStorage) {
         this.genreDbStorage = genreDbStorage;
     }
+
     public List<Genre> getAllGenres() {
         return genreDbStorage.getAllGenres();
     }
 
     public Genre getGenre(long idGenre) {
-        Genre genre = genreDbStorage.getGenre( idGenre);
-        if(genre!=null){
-            return genre;
-        }
-        else {
+        Optional<Genre> genre = genreDbStorage.getGenre(idGenre);
+        if (genre.isPresent()) {
+            return genre.get();
+        } else {
             log.warn("Genre not found" + idGenre);
             throw new ResourceNotFoundException("Genre not found");
         }

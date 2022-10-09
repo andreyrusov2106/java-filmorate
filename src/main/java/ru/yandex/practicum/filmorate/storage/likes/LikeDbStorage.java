@@ -6,7 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -22,24 +22,27 @@ public class LikeDbStorage implements LikeStorage {
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public void addFilmLike(Long idFilm, Long idUser) {
         jdbcTemplate.update(INSERT_FILM_LIKE_SQL,
                 idFilm,
                 idUser);
     }
+
     @Override
     public void removeFilmLike(Long idFilm, Long idUser) {
         jdbcTemplate.update(DELETE_FILM_LIKE_SQL,
                 idFilm,
                 idUser);
     }
+
     @Override
     public List<Long> getAllLikes(Long idFilm) {
         try {
             return jdbcTemplate.queryForList(SELECT_FILM_LIKE_SQL, Long.class, idFilm);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return new ArrayList<>();
         }
     }
 

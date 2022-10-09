@@ -38,7 +38,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> findTop10Films(int count) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

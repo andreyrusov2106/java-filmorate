@@ -2,19 +2,20 @@ package ru.yandex.practicum.filmorate.storage.genre;
 
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.sql.ResultSet;
+
 import java.util.List;
+import java.util.Optional;
 
 public interface GenreStorage {
 
     List<Genre> getAllGenres();
 
-    Genre getGenre(long idGenre);
+    Optional<Genre> getGenre(long idGenre);
 
     List<Genre> getFilmGenres(Long idFilm);
 
-    void addFilmGenre(long film_id, long genre_id);
+    void addFilmGenre(long idFilm, long idGenre);
 
-    void removeFilmAllGenre(long film_id);
+    void removeFilmAllGenre(long idFilm);
 
 }

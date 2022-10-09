@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,9 +25,9 @@ public class MpaService {
     }
 
     public Mpa getMpa(long idMpa) {
-        Mpa mpa = genreDbStorage.getMpa(idMpa);
-        if (mpa != null) {
-            return mpa;
+        Optional<Mpa> mpa = genreDbStorage.getMpa(idMpa);
+        if (mpa.isPresent()) {
+            return mpa.get();
         } else {
             log.warn("Mpa not found" + idMpa);
             throw new ResourceNotFoundException("Mpa not found");
