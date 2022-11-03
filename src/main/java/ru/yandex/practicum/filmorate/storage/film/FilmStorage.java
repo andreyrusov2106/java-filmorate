@@ -12,6 +12,8 @@ public interface FilmStorage {
 
     List<Film> findAll();
 
+    List<Film> findTop10Films(int count);
+
     Boolean contains(Film film);
 
     Boolean contains(Long id);
