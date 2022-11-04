@@ -44,13 +44,13 @@ public class FilmDbStorage implements FilmStorage {
             "from FILM as F\n" +
             "         join RATING as R on F.RATING_ID = R.RATING_ID\n" +
             "where F.FILM_ID in (\n" +
-            "    select FL.FILM_ID\n" +
+            "    select F.FILM_ID\n" +
             "    from FILM as F\n" +
-            "             join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID\n" +
-            "             join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID\n" +
-            "             join GENRE as G on FG.GENRE_ID = G.GENRE_ID\n" +
+            "             left join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID\n" +
+            "             left join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID\n" +
+            "             left join GENRE as G on FG.GENRE_ID = G.GENRE_ID\n" +
             "    where G.GENRE_ID = ? AND EXTRACT(YEAR from F.RELEASE_DATE) = ?\n" +
-            "    group by FL.FILM_ID\n" +
+            "    group by F.FILM_ID\n" +
             "    order by COUNT(DISTINCT FL.USER_ID) desc\n" +
             "    limit ?\n" +
             "    )";
@@ -60,13 +60,13 @@ public class FilmDbStorage implements FilmStorage {
             "from FILM as F\n" +
             "         join RATING as R on F.RATING_ID = R.RATING_ID\n" +
             "where F.FILM_ID in (\n" +
-            "    select FL.FILM_ID\n" +
+            "    select F.FILM_ID\n" +
             "    from FILM as F\n" +
-            "             join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID\n" +
-            "             join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID\n" +
-            "             join GENRE as G on FG.GENRE_ID = G.GENRE_ID\n" +
+            "             left join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID\n" +
+            "             left join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID\n" +
+            "             left join GENRE as G on FG.GENRE_ID = G.GENRE_ID\n" +
             "    where G.GENRE_ID = ? \n" +
-            "    group by FL.FILM_ID\n" +
+            "    group by F.FILM_ID\n" +
             "    order by COUNT(DISTINCT FL.USER_ID) desc\n" +
             "    limit ?\n" +
             "    )";
@@ -76,13 +76,13 @@ public class FilmDbStorage implements FilmStorage {
             "from FILM as F\n" +
             "         join RATING as R on F.RATING_ID = R.RATING_ID\n" +
             "where F.FILM_ID in (\n" +
-            "    select FL.FILM_ID\n" +
+            "    select F.FILM_ID\n" +
             "    from FILM as F\n" +
-            "             join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID\n" +
-            "             join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID\n" +
-            "             join GENRE as G on FG.GENRE_ID = G.GENRE_ID\n" +
+            "             left join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID\n" +
+            "             left join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID\n" +
+            "             left join GENRE as G on FG.GENRE_ID = G.GENRE_ID\n" +
             "    where EXTRACT(YEAR from F.RELEASE_DATE) = ?\n" +
-            "    group by FL.FILM_ID\n" +
+            "    group by F.FILM_ID\n" +
             "    order by COUNT(DISTINCT FL.USER_ID) desc\n" +
             "    limit ?\n" +
             "    )";
