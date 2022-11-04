@@ -19,4 +19,6 @@ public interface FilmStorage {
     Boolean contains(Long id);
 
     Film getFilm(Long id);
+
+    List<Film> findTopFilmsByGenreAndYear(int count, int genreId, int year);
 }

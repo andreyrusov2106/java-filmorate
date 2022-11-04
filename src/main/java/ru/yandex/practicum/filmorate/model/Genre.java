@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Genre {
     @EqualsAndHashCode.Include
