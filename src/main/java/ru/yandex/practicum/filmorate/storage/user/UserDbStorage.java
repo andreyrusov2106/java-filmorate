@@ -25,6 +25,7 @@ public class UserDbStorage implements UserStorage {
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public User create(User user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -48,6 +49,7 @@ public class UserDbStorage implements UserStorage {
         });
         return user;
     }
+
     @Override
     public User getUser(Long id) {
         return jdbcTemplate.queryForObject(SELECT_USER_BY_ID_SQL, this::mapRowToUser, id);
