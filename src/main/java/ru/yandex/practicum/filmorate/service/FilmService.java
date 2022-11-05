@@ -123,6 +123,8 @@ public class FilmService {
     public List<Film> getPopularFilms(int count) {
         List<Film> popularFilms = filmStorage.findTop10Films(count);
         popularFilms.forEach(f -> genreDbStorage.getFilmGenres(f.getId()).forEach(f::addGenre));
+        popularFilms.forEach(film ->
+                likeDbStorage.getAllLikes(film.getId()).forEach(film::addLike));
         log.info(String.format("Top %d popular films is %s", count, popularFilms));
         return popularFilms;
     }
@@ -135,5 +137,19 @@ public class FilmService {
         Film f = filmStorage.getFilm(id);
         genreDbStorage.getFilmGenres(f.getId()).forEach(f::addGenre);
         return f;
+    }
+
+    public List<Film> findTopFilmsByGenreAndYear(int count, int genreId, int year) {
+        if (genreId == 0 && year == 0) {
+            return getPopularFilms(count);
+        }
+        List<Film> topNFilms = filmStorage.findTopFilmsByGenreAndYear(count, genreId, year);
+
+        topNFilms.forEach(film ->
+                genreDbStorage.getFilmGenres(film.getId()).forEach(film::addGenre));
+        topNFilms.forEach(film ->
+                likeDbStorage.getAllLikes(film.getId()).forEach(film::addLike));
+
+        return topNFilms;
     }
 }
