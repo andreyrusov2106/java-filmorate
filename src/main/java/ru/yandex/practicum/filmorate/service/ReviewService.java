@@ -1,0 +1,134 @@
+package ru.yandex.practicum.filmorate.service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+
+import java.util.List;
+import java.util.Optional;
+
+import static ru.yandex.practicum.filmorate.validators.Validator.validateReview;
+
+
+@Slf4j
+@Service
+public class ReviewService {
+    private final ReviewDbStorage reviewDbStorage;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
+
+    @Autowired
+    public ReviewService(@Qualifier("UserDbStorage") UserStorage userStorage,
+                         @Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                         ReviewDbStorage reviewDbStorage) {
+        this.reviewDbStorage = reviewDbStorage;
+        this.userStorage = userStorage;
+        this.filmStorage = filmStorage;
+    }
+
+    public Review create(Review review) {
+        try {
+            validateReview(review);
+        } catch (ValidationException exception) {
+            log.warn(exception.getMessage());
+            throw exception;
+        }
+        if (!userStorage.contains(review.getUserId())) {
+            log.warn("User not found" + review.getUserId());
+            throw new ResourceNotFoundException("User not found");
+        }
+        if (!filmStorage.contains(review.getFilmId())) {
+            log.warn("User not found" + review.getFilmId());
+            throw new ResourceNotFoundException("Film not found");
+        }
+        Review createdReview = reviewDbStorage.create(review);
+        log.info("Review created" + review);
+        return createdReview;
+    }
+
+    public Review update(Review review) {
+        try {
+            validateReview(review);
+        } catch (ValidationException exception) {
+            log.warn(exception.getMessage());
+            throw exception;
+        }
+        if (!userStorage.contains(review.getUserId())) {
+            log.warn("User not found" + review.getUserId());
+            throw new ResourceNotFoundException("User not found");
+        }
+        if (!filmStorage.contains(review.getFilmId())) {
+            log.warn("User not found" + review.getFilmId());
+            throw new ResourceNotFoundException("Film not found");
+        }
+        Review updatedReview = reviewDbStorage.update(review);
+        log.info("Review updated" + review);
+        return updatedReview;
+    }
+
+    public Review get(long id) {
+        Optional<Review> review = reviewDbStorage.get(id);
+        if (review.isPresent()) {
+            return review.get();
+        } else {
+            log.warn("review not found" + id);
+            throw new ResourceNotFoundException("review not found");
+        }
+    }
+
+    public void delete(long id) {
+        reviewDbStorage.delete(id);
+        log.info("Review deleted" + id);
+    }
+
+    public List<Review> getAllReviews(long filmId, long count) {
+        List<Review> reviews = reviewDbStorage.findAllReviewsByFilmId(filmId, count);
+        log.info(String.format("Top %d reviews is %s", count, reviews));
+        return reviews;
+    }
+
+    public void addLike(long id, long userId) {
+        if (!reviewDbStorage.contains(id, userId, true)) {
+            if (!reviewDbStorage.contains(id, userId, false)) {
+                reviewDbStorage.updateUseful(id, 1);
+            } else {
+                reviewDbStorage.updateUseful(id, 2);
+            }
+            reviewDbStorage.addReviewLike(id, userId, true);
+
+        }
+    }
+
+    public void addDisLike(long id, long userId) {
+        if (!reviewDbStorage.contains(id, userId, false)) {
+            if (!reviewDbStorage.contains(id, userId, true)) {
+                reviewDbStorage.updateUseful(id, -1);
+            } else {
+                reviewDbStorage.updateUseful(id, -2);
+            }
+            reviewDbStorage.addReviewLike(id, userId, false);
+
+        }
+    }
+
+    public void removeLike(long id, long userId) {
+        if (reviewDbStorage.contains(id, userId, true)) {
+            reviewDbStorage.removeReviewLike(id, userId, true);
+            reviewDbStorage.updateUseful(id, -1);
+        }
+    }
+
+    public void removeDisLike(long id, long userId) {
+        if (reviewDbStorage.contains(id, userId, false)) {
+            reviewDbStorage.removeReviewLike(id, userId, false);
+            reviewDbStorage.updateUseful(id, 1);
+        }
+    }
+}

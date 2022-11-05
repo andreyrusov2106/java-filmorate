@@ -13,6 +13,8 @@ drop table IF EXISTS GENRE;
 drop table IF EXISTS RATING;
 
 drop table IF EXISTS USERS;
+drop table IF EXISTS REVIEW;
+drop table IF EXISTS REVIEW_LIKE;
 
  CREATE TABLE IF NOT EXISTS public.film (
     film_id integer AUTO_INCREMENT NOT NULL,
@@ -67,6 +69,24 @@ CREATE TABLE IF NOT EXISTS  public.USERS (
     name character varying,
     birthday date
 );
+CREATE TABLE IF NOT EXISTS  public.REVIEW (
+    review_id integer AUTO_INCREMENT NOT NULL,
+    content character varying NOT NULL,
+    is_positive boolean NOT NULL,
+    user_id integer NOT NULL,
+    film_id integer NOT NULL,
+    useful integer
+);
+
+CREATE TABLE IF NOT EXISTS  public.review_like (
+    review_id integer NOT NULL,
+    user_id integer NOT NULL,
+    is_like boolean
+);
+
+ALTER TABLE  public.review_like
+    ADD CONSTRAINT IF NOT EXISTS review_like_pkey PRIMARY KEY (review_id,user_id);
+
 
 
 ALTER TABLE  public.film_genre
@@ -127,6 +147,19 @@ ALTER TABLE public.friendship
 
 ALTER TABLE public.film_like
     ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.USERS(user_id);
+
+ALTER TABLE  public.REVIEW
+    ADD CONSTRAINT IF NOT EXISTS review_pkey PRIMARY KEY (review_id);
+
+ALTER TABLE public.REVIEW
+    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (film_id) REFERENCES public.film(film_id);
+
+ALTER TABLE public.REVIEW
+    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+ALTER TABLE public.review_like
+    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (review_id) REFERENCES public.review(review_id);
+ALTER TABLE public.review_like
+    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
 
