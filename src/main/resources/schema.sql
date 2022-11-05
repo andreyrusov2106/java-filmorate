@@ -128,5 +128,7 @@ ALTER TABLE public.friendship
 ALTER TABLE public.film_like
     ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.USERS(user_id);
 
+-----
+
 
 
