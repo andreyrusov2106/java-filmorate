@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -86,6 +88,20 @@ public class FilmDbStorage implements FilmStorage {
             "    order by COUNT(DISTINCT FL.USER_ID) desc\n" +
             "    limit ?\n" +
             "    )";
+
+    private static final String COMMON_FILMS = "SELECT distinct *, RATING.NAME as rating_name FROM (SELECT FILM_ID " +
+            "FROM FILM_LIKE " +
+            "WHERE USER_ID = ? " +
+            "INTERSECT SELECT distinct FILM_ID " +
+            "FROM FILM_LIKE " +
+            "WHERE USER_ID = ?) as a "+
+            "LEFT JOIN " +
+            "(SELECT FILM_ID, COUNT(USER_ID) as rate " +
+            "FROM FILM_LIKE " +
+            "GROUP BY FILM_ID) f ON (f.FILM_ID = a.FILM_ID) " +
+            "JOIN FILM  ON (FILM.FILM_ID=a.FILM_ID) "+
+            "JOIN RATING  ON RATING.RATING_ID=FILM.RATING_ID " +
+            "ORDER BY f.rate DESC ";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -161,6 +177,11 @@ public class FilmDbStorage implements FilmStorage {
             return jdbcTemplate.query(TOP_N_FILMS_BY_GENRE, this::mapRowToFilm, genreId, count);
         }
         return jdbcTemplate.query(TOP_N_FILMS_BY_GENRE_AND_YEAR, this::mapRowToFilm, genreId, year, count);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return jdbcTemplate.query(COMMON_FILMS, this::mapRowToFilm, userId, friendId);
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
