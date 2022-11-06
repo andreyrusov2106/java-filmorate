@@ -15,7 +15,7 @@ public class FeedStorageImpl implements FeedStorage {
             "insert into EVENTS (USER_ID, OPERATION, EVENT_TYPE, ENTITY_ID) values (?,?,?,?)";
     private static final String FEED_BY_USER_ID =
             "select * from EVENTS where USER_ID = ?";
-    
+
 
     private final JdbcTemplate jdbcTemplate;
 
