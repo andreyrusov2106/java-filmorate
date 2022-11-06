@@ -28,7 +28,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private final static String UPDATE_REVIEW_SQL =
             "UPDATE PUBLIC.REVIEW " +
-                    "SET CONTENT=?, IS_POSITIVE=?, USER_ID=?, FILM_ID=? , USEFUL=? " +
+                    "SET CONTENT=?, IS_POSITIVE=? " +
                     "WHERE REVIEW_ID=?";
     private final static String UPDATE_REVIEW_USEFUL_SQL =
             "UPDATE PUBLIC.REVIEW " +
@@ -65,10 +65,7 @@ public class ReviewDbStorage implements ReviewStorage {
                     .prepareStatement(UPDATE_REVIEW_SQL);
             ps.setString(1, review.getContent());
             ps.setBoolean(2, review.getIsPositive());
-            ps.setLong(3, review.getUserId());
-            ps.setLong(4, review.getFilmId());
-            ps.setLong(5, review.getUseful());
-            ps.setLong(6, review.getReviewId());
+            ps.setLong(3, review.getReviewId());
             return ps;
         });
         return review;
