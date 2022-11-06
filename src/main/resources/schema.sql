@@ -1,20 +1,21 @@
 
 --
-drop table IF EXISTS FILM;
+drop table IF EXISTS FILM cascade ;
 
-drop table IF EXISTS FILM_GENRE;
+drop table IF EXISTS FILM_GENRE cascade ;
 
-drop table IF EXISTS FILM_LIKE;
+drop table IF EXISTS FILM_LIKE cascade ;
 
-drop table IF EXISTS FRIENDSHIP;
+drop table IF EXISTS FRIENDSHIP cascade ;
 
-drop table IF EXISTS GENRE;
+drop table IF EXISTS GENRE cascade ;
 
-drop table IF EXISTS RATING;
+drop table IF EXISTS RATING cascade ;
 
-drop table IF EXISTS USERS;
-drop table IF EXISTS REVIEW;
-drop table IF EXISTS REVIEW_LIKE;
+drop table IF EXISTS USERS cascade ;
+drop table IF EXISTS REVIEW cascade ;
+drop table IF EXISTS REVIEW_LIKE cascade ;
+drop table if exists EVENTS cascade ;
 
  CREATE TABLE IF NOT EXISTS public.film (
     film_id integer AUTO_INCREMENT NOT NULL,
@@ -161,5 +162,16 @@ ALTER TABLE public.review_like
 ALTER TABLE public.review_like
     ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
+create table if not exists EVENTS
+(
+    id         int auto_increment primary key,
+    user_id    int,
+    operation   varchar not null,
+    event_type varchar not null,
+    timestamp  timestamp default now(),
+    entity_id int,
+    constraint EVENTS_USERS_USER_ID_FK
+        foreign key (user_id) references USERS
+);
 
 

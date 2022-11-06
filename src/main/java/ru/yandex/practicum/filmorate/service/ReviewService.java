@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.event.EventType;
+import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.event.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -23,14 +26,17 @@ public class ReviewService {
     private final ReviewDbStorage reviewDbStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FeedStorage feedStorage;
 
     @Autowired
     public ReviewService(@Qualifier("UserDbStorage") UserStorage userStorage,
                          @Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                         ReviewDbStorage reviewDbStorage) {
+                         ReviewDbStorage reviewDbStorage,
+                         FeedStorage feedStorage) {
         this.reviewDbStorage = reviewDbStorage;
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
+        this.feedStorage = feedStorage;
     }
 
     public Review create(Review review) {
@@ -49,6 +55,7 @@ public class ReviewService {
             throw new ResourceNotFoundException("Film not found");
         }
         Review createdReview = reviewDbStorage.create(review);
+        feedStorage.createEvent(review.getUserId(), Operation.ADD, EventType.REVIEW, review.getFilmId());
         log.info("Review created" + review);
         return createdReview;
     }
@@ -69,6 +76,7 @@ public class ReviewService {
             throw new ResourceNotFoundException("Film not found");
         }
         Review updatedReview = reviewDbStorage.update(review);
+        feedStorage.createEvent(review.getUserId(), Operation.UPDATE, EventType.REVIEW, review.getFilmId());
         log.info("Review updated" + review);
         return updatedReview;
     }
@@ -84,7 +92,11 @@ public class ReviewService {
     }
 
     public void delete(long id) {
+        Review review = reviewDbStorage.get(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(String.format("review with id %s not found", id)));
         reviewDbStorage.delete(id);
+        feedStorage.createEvent(review.getUserId(), Operation.REMOVE, EventType.REVIEW, id);
         log.info("Review deleted" + id);
     }
 
@@ -102,7 +114,7 @@ public class ReviewService {
                 reviewDbStorage.updateUseful(id, 2);
             }
             reviewDbStorage.addReviewLike(id, userId, true);
-
+            feedStorage.createEvent(userId, Operation.ADD, EventType.LIKE, id);
         }
     }
 
@@ -122,6 +134,7 @@ public class ReviewService {
         if (reviewDbStorage.contains(id, userId, true)) {
             reviewDbStorage.removeReviewLike(id, userId, true);
             reviewDbStorage.updateUseful(id, -1);
+            feedStorage.createEvent(userId, Operation.REMOVE, EventType.LIKE, id);
         }
     }
 

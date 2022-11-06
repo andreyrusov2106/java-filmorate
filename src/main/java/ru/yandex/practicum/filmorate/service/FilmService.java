@@ -9,6 +9,9 @@ import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.event.EventType;
+import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.event.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeDbStorage;
@@ -27,19 +30,22 @@ public class FilmService {
     private final GenreStorage genreDbStorage;
     private final MpaDbStorage mpaDbStorage;
     private final LikeDbStorage likeDbStorage;
+    private final FeedStorage feedStorage;
 
     @Autowired
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
                        @Qualifier("UserDbStorage") UserStorage userStorage,
                        GenreStorage genreDbStorage,
                        MpaDbStorage mpaDbStorage,
-                       LikeDbStorage likeDbStorage) {
+                       LikeDbStorage likeDbStorage,
+                       FeedStorage feedStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.genreDbStorage = genreDbStorage;
         this.mpaDbStorage = mpaDbStorage;
         this.likeDbStorage = likeDbStorage;
 
+        this.feedStorage = feedStorage;
     }
 
     public Film create(Film film) {
@@ -101,6 +107,7 @@ public class FilmService {
     public void addLike(Long idFilm, Long idUser) {
         CheckFilmAndUser(idFilm, idUser);
         likeDbStorage.addFilmLike(idFilm, idUser);
+        feedStorage.createEvent(idUser, Operation.ADD, EventType.LIKE, idFilm);
     }
 
     private void CheckFilmAndUser(Long idFilm, Long idUser) {
@@ -118,6 +125,7 @@ public class FilmService {
     public void removeLike(Long idFilm, Long idUser) {
         CheckFilmAndUser(idFilm, idUser);
         likeDbStorage.removeFilmLike(idFilm, idUser);
+        feedStorage.createEvent(idUser, Operation.REMOVE, EventType.LIKE, idFilm);
     }
 
     public List<Film> getPopularFilms(int count) {
