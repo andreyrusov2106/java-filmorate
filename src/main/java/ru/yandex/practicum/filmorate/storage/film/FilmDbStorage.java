@@ -89,6 +89,20 @@ public class FilmDbStorage implements FilmStorage {
             "    limit ?\n" +
             "    )";
 
+    private static final String COMMON_FILMS = "SELECT distinct *, RATING.NAME as rating_name FROM (SELECT FILM_ID " +
+            "FROM FILM_LIKE " +
+            "WHERE USER_ID = ? " +
+            "INTERSECT SELECT distinct FILM_ID " +
+            "FROM FILM_LIKE " +
+            "WHERE USER_ID = ?) as a "+
+            "LEFT JOIN " +
+            "(SELECT FILM_ID, COUNT(USER_ID) as rate " +
+            "FROM FILM_LIKE " +
+            "GROUP BY FILM_ID) f ON (f.FILM_ID = a.FILM_ID) " +
+            "JOIN FILM  ON (FILM.FILM_ID=a.FILM_ID) "+
+            "JOIN RATING  ON RATING.RATING_ID=FILM.RATING_ID " +
+            "ORDER BY f.rate DESC ";
+
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -165,6 +179,11 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(TOP_N_FILMS_BY_GENRE_AND_YEAR, this::mapRowToFilm, genreId, year, count);
     }
 
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return jdbcTemplate.query(COMMON_FILMS, this::mapRowToFilm, userId, friendId);
+    }
+
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         Date tmpDate = resultSet.getDate("release_date");
         LocalDate release_date = tmpDate == null ? null : tmpDate.toLocalDate();
@@ -176,26 +195,5 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(resultSet.getLong("duration"))
                 .mpa(new Mpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name")))
                 .build();
-    }
-
-    @Override
-    public List<Film> getCommonFilms(long userId, long friendId) {
-        String sqlQuery = "SELECT distinct * FROM (SELECT film_id " +
-                "FROM film_like " +
-                "WHERE user_id = ? " +
-                "INTERSECT SELECT distinct film_id " +
-                "FROM film_like " +
-                "WHERE user_id = ?) as a "+
-                "LEFT JOIN " +
-                "(SELECT film_id, COUNT(user_id) as rate " +
-                "FROM film_like " +
-                "GROUP BY film_id) f ON (f.film_id = a.film_id) " +
-                "ORDER BY f.rate DESC ";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
-        List<Film> commonFilms = new ArrayList<>();
-        while (rowSet.next()) {
-            commonFilms.add(getFilm(rowSet.getLong("film_id")));
-        }
-        return commonFilms;
     }
 }
