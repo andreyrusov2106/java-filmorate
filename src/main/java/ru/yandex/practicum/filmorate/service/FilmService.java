@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.FilmAlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -135,5 +136,13 @@ public class FilmService {
         Film f = filmStorage.getFilm(id);
         genreDbStorage.getFilmGenres(f.getId()).forEach(f::addGenre);
         return f;
+    }
+
+    public List<Film> getFilmsByDirector(Long directorId, String sortBy) {
+        List<Film> films = filmStorage.getByDirector(directorId, sortBy);
+        if (films.size() == 0) {
+            throw new ObjectNotFoundException(String.format("Films not found for director: %s", directorId));
+        }
+        return filmStorage.getByDirector(directorId, sortBy);
     }
 }

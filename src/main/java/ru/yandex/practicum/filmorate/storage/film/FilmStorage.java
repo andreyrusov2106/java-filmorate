@@ -19,4 +19,5 @@ public interface FilmStorage {
     Boolean contains(Long id);
 
     Film getFilm(Long id);
+    List<Film> getByDirector(Long directorId, String sortBy);
 }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -54,4 +55,9 @@ public class FilmController {
         return filmService.getFilm(id);
     }
 
+    @GetMapping("/films/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable Long directorId,
+                                               @RequestParam(required = false, defaultValue = "year") String sortBy) {
+        return filmService.getFilmsByDirector(directorId, sortBy);
+    }
 }
