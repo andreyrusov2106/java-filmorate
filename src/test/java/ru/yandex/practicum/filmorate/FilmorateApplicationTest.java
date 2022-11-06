@@ -5,14 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.friends.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
@@ -31,6 +34,7 @@ class FilmorateApplicationTest {
     private static MpaDbStorage mpaStorage;
     private static LikeDbStorage likeStorage;
     private static GenreDbStorage genreStorage;
+    private static ReviewStorage reviewStorage;
 
 
     @BeforeAll
@@ -39,7 +43,8 @@ class FilmorateApplicationTest {
                              @Autowired FriendDbStorage friendStorage,
                              @Autowired MpaDbStorage mpaStorage,
                              @Autowired LikeDbStorage likeStorage,
-                             @Autowired GenreDbStorage genreStorage
+                             @Autowired GenreDbStorage genreStorage,
+                             @Autowired ReviewStorage reviewStorage
                              ){
         setUserStorage(userStorage);
         setFilmStorage(filmDbStorage);
@@ -47,6 +52,7 @@ class FilmorateApplicationTest {
         setLikeStorage(likeStorage);
         setMpaStorage(mpaStorage);
         setGenreStorage(genreStorage);
+        setReviewStorage(reviewStorage);
         User u = User.builder()
                 .email("email")
                 .login("login")
@@ -79,6 +85,30 @@ class FilmorateApplicationTest {
         friendStorage.addFriend(createdUser.getId(),createdUser2.getId());
         friendStorage.addFriend(createdUser3.getId(),createdUser2.getId());
         friendStorage.addFriend(createdUser3.getId(),createdUser.getId());
+        Review r1=Review.builder()
+                .useful(5)
+                .userId(1L)
+                .filmId(1L)
+                .isPositive(true)
+                .content("This film is soo bad.")
+                .build();
+        reviewStorage.create(r1);
+        Review r2=Review.builder()
+                .useful(5)
+                .userId(1L)
+                .filmId(1L)
+                .isPositive(true)
+                .content("This film is soo bad.")
+                .build();
+        reviewStorage.create(r2);
+        Review r3=Review.builder()
+                .useful(5)
+                .userId(1L)
+                .filmId(1L)
+                .isPositive(true)
+                .content("This film is soo bad.")
+                .build();
+        reviewStorage.create(r2);
 
 
     }
@@ -106,6 +136,9 @@ class FilmorateApplicationTest {
 
     public static void setGenreStorage(GenreDbStorage genreStorage) {
         FilmorateApplicationTest.genreStorage = genreStorage;
+    }
+    public static void setReviewStorage(ReviewStorage reviewStorage) {
+        FilmorateApplicationTest.reviewStorage = reviewStorage;
     }
 
     //UserTests
@@ -267,5 +300,28 @@ class FilmorateApplicationTest {
         var genres=genreStorage.getFilmGenres(2L);
         assertEquals(0, genres.size(), "Неверное количество жанров");
     }
+
+    @Test
+    public void createReview() {
+        var review=reviewStorage.get(1L);
+        assertEquals(5, review.get().getUseful(), "Неверная полезность");
+    }
+    @Test
+    public void updateReview() {
+        var review=reviewStorage.get(3L);
+        Review r1=review.get();
+        r1.setUseful(100);
+        var new_review =reviewStorage.update(r1);
+        assertEquals(100, review.get().getUseful(), "Неверная полезность");
+    }
+    @Test
+    public void deleteReview() {
+        reviewStorage.delete(2L);
+        var reviews =reviewStorage.findAllReviewsByFilmId(1L,10);
+        assertEquals(2, reviews.size(), "Неверное количетво ревью");
+    }
+
+
+
 
 }
