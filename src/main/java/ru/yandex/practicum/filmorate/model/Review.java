@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,12 +11,14 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Review {
     private long reviewId;
     private String content;
     private Boolean isPositive;
     private Long userId;
     private Long filmId;
+    @EqualsAndHashCode.Include
     private long useful;
 
     public Map<String, Object> toMap() {
