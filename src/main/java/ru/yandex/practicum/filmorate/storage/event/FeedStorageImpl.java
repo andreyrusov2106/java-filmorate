@@ -16,6 +16,9 @@ public class FeedStorageImpl implements FeedStorage {
     private static final String FEED_BY_USER_ID =
             "select * from EVENTS where USER_ID = ?";
 
+    private static final String REMOVE_BY_ENTITY_ID =
+            "delete from EVENTS where ENTITY_ID = ?";
+
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -41,5 +44,11 @@ public class FeedStorageImpl implements FeedStorage {
     public void createEvent(Long userId, Operation operation, EventType type, Long entityId) {
         jdbcTemplate.update(CREATE_EVENT, userId, operation.name(), type.name(), entityId);
         log.info("User with id {} create some event", userId);
+    }
+
+    @Override
+    public void removeEventByEntityId(long id) {
+        jdbcTemplate.update(REMOVE_BY_ENTITY_ID, id);
+        log.info("Entity with id {} delete from events", id);
     }
 }

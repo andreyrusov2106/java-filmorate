@@ -99,6 +99,7 @@ public class ReviewService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException(String.format("review with id %s not found", id)));
         reviewDbStorage.delete(id);
+        feedStorage.removeEventByEntityId(id);
         feedStorage.createEvent(review.getUserId(), Operation.REMOVE, EventType.REVIEW, id);
         log.info("Review deleted" + id);
     }
