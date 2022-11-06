@@ -117,7 +117,7 @@ public class ReviewService {
                 reviewDbStorage.updateUseful(id, 2);
             }
             reviewDbStorage.addReviewLike(id, userId, true);
-            //feedStorage.createEvent(userId, Operation.ADD, EventType.LIKE, id);
+            feedStorage.createEvent(userId, Operation.ADD, EventType.LIKE, id);
         }
     }
 
@@ -137,7 +137,7 @@ public class ReviewService {
         if (reviewDbStorage.contains(id, userId, true)) {
             reviewDbStorage.removeReviewLike(id, userId, true);
             reviewDbStorage.updateUseful(id, -1);
-            //feedStorage.createEvent(userId, Operation.REMOVE, EventType.LIKE, id);
+            feedStorage.createEvent(userId, Operation.REMOVE, EventType.LIKE, id);
         }
     }
 
