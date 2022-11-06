@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -16,5 +15,5 @@ public class Event {
     private String operation;
     private String eventType;
     private long entityId;
-    private Timestamp timestamp;
+    private long timestamp;
 }

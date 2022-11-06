@@ -32,7 +32,7 @@ public class FeedStorageImpl implements FeedStorage {
                         .operation(rs.getString("operation"))
                         .eventType(rs.getString("event_type"))
                         .entityId(rs.getLong("entity_id"))
-                        .timestamp(rs.getTimestamp("timestamp"))
+                        .timestamp(rs.getTimestamp("timestamp").toInstant().toEpochMilli())
                         .build(),
                 id);
     }
