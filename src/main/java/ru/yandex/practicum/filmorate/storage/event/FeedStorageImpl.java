@@ -15,9 +15,7 @@ public class FeedStorageImpl implements FeedStorage {
             "insert into EVENTS (USER_ID, OPERATION, EVENT_TYPE, ENTITY_ID) values (?,?,?,?)";
     private static final String FEED_BY_USER_ID =
             "select * from EVENTS where USER_ID = ?";
-
-    private static final String REMOVE_BY_ENTITY_ID =
-            "delete from EVENTS where ENTITY_ID = ?";
+    
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -46,9 +44,4 @@ public class FeedStorageImpl implements FeedStorage {
         log.info("User with id {} create some event", userId);
     }
 
-    @Override
-    public void removeEventByEntityId(long id) {
-        jdbcTemplate.update(REMOVE_BY_ENTITY_ID, id);
-        log.info("Entity with id {} delete from events", id);
-    }
 }
