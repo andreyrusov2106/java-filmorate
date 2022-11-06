@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -174,5 +176,26 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(resultSet.getLong("duration"))
                 .mpa(new Mpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name")))
                 .build();
+    }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        String sqlQuery = "SELECT distinct * FROM (SELECT film_id " +
+                "FROM film_like " +
+                "WHERE user_id = ? " +
+                "INTERSECT SELECT distinct film_id " +
+                "FROM film_like " +
+                "WHERE user_id = ?) as a "+
+                "LEFT JOIN " +
+                "(SELECT film_id, COUNT(user_id) as rate " +
+                "FROM film_like " +
+                "GROUP BY film_id) f ON (f.film_id = a.film_id) " +
+                "ORDER BY f.rate DESC ";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
+        List<Film> commonFilms = new ArrayList<>();
+        while (rowSet.next()) {
+            commonFilms.add(getFilm(rowSet.getLong("film_id")));
+        }
+        return commonFilms;
     }
 }

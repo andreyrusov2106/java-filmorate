@@ -62,4 +62,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> findTopFilmsByGenreAndYear(int count, int genreId, int year) {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "method not implemented");
     }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return null;
+    }
 }

@@ -152,4 +152,8 @@ public class FilmService {
 
         return topNFilms;
     }
+
+    public List<Film> getCommonFilms(long userId, long friendId) throws ResourceNotFoundException {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
 }
