@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.FilmAlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -147,6 +148,7 @@ public class FilmService {
         return f;
     }
 
+
     public List<Film> findTopFilmsByGenreAndYear(int count, int genreId, int year) {
         if (genreId == 0 && year == 0) {
             return getPopularFilms(count);
@@ -159,5 +161,18 @@ public class FilmService {
                 likeDbStorage.getAllLikes(film.getId()).forEach(film::addLike));
 
         return topNFilms;
+    }
+
+    public List<Film> getCommonFilms(long userId, long friendId) throws ResourceNotFoundException {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public List<Film> getFilmsByDirector(Long directorId, String sortBy) {
+        List<Film> films = filmStorage.getByDirector(directorId, sortBy);
+        films.forEach(f -> genreDbStorage.getFilmGenres(f.getId()).forEach(f::addGenre));
+        if (films.size() == 0) {
+            throw new ObjectNotFoundException(String.format("Films not found for director: %s", directorId));
+        }
+        return films;
     }
 }
