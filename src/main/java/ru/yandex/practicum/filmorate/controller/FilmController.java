@@ -66,6 +66,5 @@ public class FilmController {
     public Collection<Film> getFilmsByDirector(@PathVariable Long directorId,
                                                @RequestParam(required = false, defaultValue = "year") String sortBy) {
         return filmService.getFilmsByDirector(directorId, sortBy);
-
     }
 }

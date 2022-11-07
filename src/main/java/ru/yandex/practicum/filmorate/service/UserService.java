@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.event.EventType;
+import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.event.Operation;
 
 import java.util.List;
 
@@ -20,11 +23,13 @@ public class UserService {
 
     private final UserStorage userStorage;
     private final FriendsStorage friendsStorage;
+    private final FeedStorage feedStorage;
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage, FeedStorage feedStorage) {
         this.userStorage = userStorage;
         this.friendsStorage = friendsStorage;
+        this.feedStorage = feedStorage;
     }
 
     public User create(User user) {
@@ -83,6 +88,7 @@ public class UserService {
             throw new ResourceNotFoundException("User not found");
         }
         friendsStorage.addFriend(id, idFriend);
+        feedStorage.createEvent(id, Operation.ADD, EventType.FRIEND, idFriend);
         log.info(String.format("Added friendship to users with id=%d and id=%d", id, idFriend));
     }
 
@@ -92,6 +98,7 @@ public class UserService {
             throw new ResourceNotFoundException("User not found");
         }
         friendsStorage.removeFriend(id, idFriend);
+        feedStorage.createEvent(id, Operation.REMOVE, EventType.FRIEND, idFriend);
         log.info(String.format("Removed friendship to users with id=%d and id=%d", id, idFriend));
     }
 
