@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -109,6 +110,9 @@ public class UserService {
     }
 
     public List<User> getAllFriends(Long id) {
+        if (!this.userStorage.contains(id)) {
+            throw new ObjectNotFoundException("There is no user with such id");
+        }
         List<User> allFriends = friendsStorage.getAllFriends(id);
         log.info(String.format("All friends for user with id=%d is %s", id, allFriends));
         return allFriends;
