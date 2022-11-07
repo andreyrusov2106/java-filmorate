@@ -140,9 +140,10 @@ public class FilmService {
 
     public List<Film> getFilmsByDirector(Long directorId, String sortBy) {
         List<Film> films = filmStorage.getByDirector(directorId, sortBy);
+        films.forEach(f -> genreDbStorage.getFilmGenres(f.getId()).forEach(f::addGenre));
         if (films.size() == 0) {
             throw new ObjectNotFoundException(String.format("Films not found for director: %s", directorId));
         }
-        return filmStorage.getByDirector(directorId, sortBy);
+        return films;
     }
 }
