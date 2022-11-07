@@ -81,4 +81,10 @@ public class UserDbStorage implements UserStorage {
         var sqlRowSet = jdbcTemplate.queryForRowSet(SELECT_USER_BY_ID_SQL, id);
         return sqlRowSet.isBeforeFirst();
     }
+
+    @Override
+    public boolean removeUser(Long id) {
+        String sqlQuery = "DELETE FROM users WHERE user_id = ?";
+        return this.jdbcTemplate.update(sqlQuery, id) != 0;
+    }
 }

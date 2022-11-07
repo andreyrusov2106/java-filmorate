@@ -1,98 +1,86 @@
+DROP TABLE IF EXISTS FILM CASCADE;
 
---
-drop table IF EXISTS DIRECTOR_FILMS cascade ;
+DROP TABLE IF EXISTS FILM_GENRE CASCADE;
 
-drop table IF EXISTS DIRECTORS cascade ;
+DROP TABLE IF EXISTS FILM_LIKE CASCADE;
 
-drop table IF EXISTS FILM cascade ;
+DROP TABLE IF EXISTS FRIENDSHIP CASCADE;
 
-drop table IF EXISTS FILM_GENRE cascade ;
+DROP TABLE IF EXISTS GENRE CASCADE;
 
-drop table IF EXISTS FILM_LIKE cascade ;
+DROP TABLE IF EXISTS RATING CASCADE;
 
-drop table IF EXISTS FRIENDSHIP cascade ;
+DROP TABLE IF EXISTS USERS CASCADE;
 
-drop table IF EXISTS GENRE cascade ;
+DROP TABLE IF EXISTS REVIEW CASCADE;
 
-drop table IF EXISTS RATING cascade ;
+DROP TABLE IF EXISTS REVIEW_LIKE CASCADE;
 
-drop table IF EXISTS USERS cascade ;
-drop table IF EXISTS REVIEW cascade ;
-drop table IF EXISTS REVIEW_LIKE cascade ;
-drop table if exists EVENTS cascade ;
+DROP TABLE IF EXISTS EVENTS CASCADE;
 
-
-CREATE TABLE IF NOT EXISTS public.film (
-    film_id integer AUTO_INCREMENT NOT NULL,
-    name character varying NOT NULL,
-    description character varying,
-    release_date date,
-    duration integer,
-    rating_id integer
+CREATE TABLE IF NOT EXISTS rating(
+                                     rating_id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                                     name CHARACTER VARYING
 );
 
+CREATE TABLE IF NOT EXISTS film(
+                                   film_id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                                   name CHARACTER VARYING NOT NULL,
+                                   description CHARACTER VARYING,
+                                   release_date DATE,
+                                   duration INTEGER,
+                                   rating_id INTEGER REFERENCES rating(rating_id) ON DELETE CASCADE
+    );
 
-CREATE TABLE IF NOT EXISTS  public.film_genre (
-    film_genre_id  integer AUTO_INCREMENT NOT NULL,
-    film_id integer NOT NULL,
-    genre_id integer NOT NULL
+CREATE TABLE IF NOT EXISTS genre(
+                                    genre_id integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                                    name CHARACTER VARYING
 );
 
+CREATE TABLE IF NOT EXISTS film_genre(
+                                         film_genre_id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                                         film_id INTEGER NOT NULL REFERENCES film(film_id) ON DELETE CASCADE,
+    genre_id INTEGER NOT NULL REFERENCES genre(genre_id) ON DELETE CASCADE
+    );
 
-
-CREATE TABLE IF NOT EXISTS  public.film_like (
-    like_id integer AUTO_INCREMENT NOT NULL,
-    film_id integer NOT NULL,
-    user_id integer NOT NULL
+CREATE TABLE IF NOT EXISTS users (
+                                     user_id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                                     email CHARACTER VARYING,
+                                     login CHARACTER VARYING,
+                                     name CHARACTER VARYING,
+                                     birthday DATE
 );
 
+CREATE TABLE IF NOT EXISTS film_like(
+                                        like_id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                                        film_id INTEGER NOT NULL REFERENCES film(film_id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE
+    );
 
-CREATE TABLE IF NOT EXISTS  public.friendship (
-    friendship_id integer AUTO_INCREMENT NOT NULL,
-    user_id integer NOT NULL,
-    friend_id integer NOT NULL,
-    is_confirmed boolean
+CREATE TABLE IF NOT EXISTS friendship(
+                                         friendship_id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                                         user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    friend_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    is_confirmed BOOLEAN
+    );
+
+CREATE TABLE IF NOT EXISTS REVIEW(
+                                     review_id INTEGER AUTO_INCREMENT NOT NULL,
+                                     content CHARACTER VARYING NOT NULL,
+                                     is_positive BOOLEAN NOT NULL,
+                                     user_id INTEGER NOT NULL,
+                                     film_id INTEGER NOT NULL,
+                                     useful INTEGER
 );
 
-
-
-CREATE TABLE IF NOT EXISTS  public.genre (
-    genre_id integer AUTO_INCREMENT NOT NULL,
-    name character varying
+CREATE TABLE IF NOT EXISTS review_like(
+                                          review_id INTEGER NOT NULL,
+                                          user_id INTEGER NOT NULL,
+                                          is_like BOOLEAN
 );
 
-
-CREATE TABLE IF NOT EXISTS  public.rating (
-    rating_id integer AUTO_INCREMENT NOT NULL,
-    name character varying
-);
-
-
-CREATE TABLE IF NOT EXISTS  public.USERS (
-    user_id integer AUTO_INCREMENT NOT NULL,
-    email character varying,
-    login character varying,
-    name character varying,
-    birthday date
-);
-CREATE TABLE IF NOT EXISTS  public.REVIEW (
-    review_id integer AUTO_INCREMENT NOT NULL,
-    content character varying NOT NULL,
-    is_positive boolean NOT NULL,
-    user_id integer NOT NULL,
-    film_id integer NOT NULL,
-    useful integer
-);
-
-CREATE TABLE IF NOT EXISTS  public.review_like (
-    review_id integer NOT NULL,
-    user_id integer NOT NULL,
-    is_like boolean
-);
-
-ALTER TABLE  public.review_like
-    ADD CONSTRAINT IF NOT EXISTS review_like_pkey PRIMARY KEY (review_id,user_id);
-
+ALTER TABLE review_like
+    ADD CONSTRAINT IF NOT EXISTS review_like_pkey PRIMARY KEY (review_id, user_id);
 
 CREATE TABLE IF NOT EXISTS DIRECTORS
 (
@@ -100,81 +88,20 @@ CREATE TABLE IF NOT EXISTS DIRECTORS
     NAME        VARCHAR(256) NOT NULL
     );
 
-
-ALTER TABLE  public.film_genre
-    ADD CONSTRAINT IF NOT EXISTS film_genre_pkey PRIMARY KEY (film_genre_id);
-
-
-ALTER TABLE  public.film
-    ADD CONSTRAINT IF NOT EXISTS film_pkey PRIMARY KEY (film_id);
-
-
-ALTER TABLE  public.friendship
-    ADD CONSTRAINT IF NOT EXISTS friendship_pkey PRIMARY KEY (friendship_id);
-
-
-ALTER TABLE  public.genre
-    ADD CONSTRAINT IF NOT EXISTS genre_pkey PRIMARY KEY (genre_id);
-
-
-ALTER TABLE  public.film_like
-    ADD CONSTRAINT IF NOT EXISTS like_pkey PRIMARY KEY (like_id);
-
-
-ALTER TABLE public.rating
-    ADD CONSTRAINT IF NOT EXISTS rating_pkey PRIMARY KEY (rating_id);
-
-
-ALTER TABLE  public.USERS
-    ADD CONSTRAINT IF NOT EXISTS user_pkey PRIMARY KEY (user_id);
-
-ALTER TABLE public.film
-    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (rating_id) REFERENCES public.rating(rating_id);
-
-
-
-ALTER TABLE public.film_genre
-    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (film_id) REFERENCES public.film(film_id);
-
-
-ALTER TABLE public.friendship
-    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (user_id) REFERENCES public.USERS(user_id);
-
-
-
-ALTER TABLE public.film_like
-    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (film_id) REFERENCES public.film(film_id);
-
-
-
-ALTER TABLE public.film_genre
-    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (genre_id) REFERENCES public.genre(genre_id);
-
-
-
-ALTER TABLE public.friendship
-    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (friend_id) REFERENCES public.USERS(user_id);
-
-
-
-ALTER TABLE public.film_like
-    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.USERS(user_id);
-
-
 ALTER TABLE  public.REVIEW
     ADD CONSTRAINT IF NOT EXISTS review_pkey PRIMARY KEY (review_id);
 
 ALTER TABLE public.REVIEW
-    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (film_id) REFERENCES public.film(film_id);
+    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (film_id) REFERENCES public.film(film_id) ON DELETE CASCADE;
 
 ALTER TABLE public.REVIEW
-    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
 
 ALTER TABLE public.review_like
-    ADD CONSTRAINT IF NOT EXISTS fk1 FOREIGN KEY (review_id) REFERENCES public.review(review_id);
+    ADD CONSTRAINT IF NOT EXISTS fk3 FOREIGN KEY (review_id) REFERENCES public.review(review_id) ON DELETE CASCADE;
 
 ALTER TABLE public.review_like
-    ADD CONSTRAINT IF NOT EXISTS fk2 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+    ADD CONSTRAINT IF NOT EXISTS fk4 FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS DIRECTOR_FILMS
 (
@@ -182,18 +109,18 @@ CREATE TABLE IF NOT EXISTS DIRECTOR_FILMS
     FILM_ID     BIGINT NOT NULL,
     CONSTRAINT FK_DIRECTOR_FILMS1 FOREIGN KEY (DIRECTOR_ID) REFERENCES DIRECTORS (DIRECTOR_ID) ON DELETE CASCADE,
     CONSTRAINT FK_DIRECTOR_FILMS2 FOREIGN KEY (FILM_ID) REFERENCES FILM (FILM_ID) ON DELETE CASCADE
-);
+    );
 
-create table EVENTS
+CREATE TABLE IF NOT EXISTS EVENTS
 (
     ID         INTEGER auto_increment
-        primary key,
+    primary key,
     USER_ID    INTEGER,
     OPERATION  CHARACTER VARYING not null,
     EVENT_TYPE CHARACTER VARYING not null,
     TIMESTAMP  TIMESTAMP default LOCALTIMESTAMP,
     ENTITY_ID  INTEGER,
     constraint EVENTS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS
-);
+    foreign key (USER_ID) references USERS ON DELETE CASCADE
+    );
 

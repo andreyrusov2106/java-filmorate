@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -45,7 +44,7 @@ class FilmorateApplicationTest {
                              @Autowired LikeDbStorage likeStorage,
                              @Autowired GenreDbStorage genreStorage,
                              @Autowired ReviewStorage reviewStorage
-                             ){
+    ){
         setUserStorage(userStorage);
         setFilmStorage(filmDbStorage);
         setFriendStorageStorage(friendStorage);
@@ -200,7 +199,7 @@ class FilmorateApplicationTest {
                 .mpa(Mpa.builder().id(1).build())
                 .build();
         Film createdFilm= filmStorage.create(f);
-        assertThat(createdFilm).hasFieldOrPropertyWithValue("id", 2L);
+        assertThat(createdFilm).hasFieldOrPropertyWithValue("id", 3L);
     }
     @Test
     public void testFindFilmById() {
@@ -295,6 +294,14 @@ class FilmorateApplicationTest {
 
     @Test
     public void removeGenre() {
+        Film f  = Film.builder()
+                .name("name3")
+                .description("description3")
+                .releaseDate(LocalDate.now())
+                .duration(1000L)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+        filmStorage.create(f);
         genreStorage.addFilmGenre(2L,1L);
         genreStorage.removeFilmAllGenre(2L);
         var genres=genreStorage.getFilmGenres(2L);

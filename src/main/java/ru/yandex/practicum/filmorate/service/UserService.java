@@ -113,4 +113,14 @@ public class UserService {
         log.info(String.format("All friends for user with id=%d is %s", id, allFriends));
         return allFriends;
     }
+
+    public void removeUser(Long id) {
+        if (!userStorage.contains(id)) {
+            throw new ResourceNotFoundException("User not found");
+        }
+
+        if (!userStorage.removeUser(id)) {
+            throw new RuntimeException("Unexpected error has occurred");
+        }
+    }
 }

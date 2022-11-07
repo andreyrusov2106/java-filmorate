@@ -72,4 +72,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getByDirector(Long directorId, String sortBy) {
         throw new InternalServerException("Method not allowed");
     }
+
+    @Override
+    public boolean removeFilm(Long id) {
+        return films.remove(id) != null;
+    }
 }

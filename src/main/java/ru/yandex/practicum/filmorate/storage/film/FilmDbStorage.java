@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -17,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -226,5 +224,11 @@ public class FilmDbStorage implements FilmStorage {
                 .mpa(new Mpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name")))
                 .directors(directorFilmDbStorage.getByFilm(resultSet.getLong("film_id")))
                 .build();
+    }
+
+    @Override
+    public boolean removeFilm(Long id) {
+        String sqlQuery = "DELETE FROM film WHERE film_id = ?";
+        return this.jdbcTemplate.update(sqlQuery, id) != 0;
     }
 }

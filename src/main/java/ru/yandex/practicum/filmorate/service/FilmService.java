@@ -175,4 +175,14 @@ public class FilmService {
         }
         return films;
     }
+
+    public void removeFilm(Long id) {
+        if (!filmStorage.contains(id)) {
+            throw new ResourceNotFoundException("Film not found");
+        }
+
+        if (!filmStorage.removeFilm(id)) {
+            throw new RuntimeException("Unexpected error has occurred");
+        }
+    }
 }
