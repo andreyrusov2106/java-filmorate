@@ -29,6 +29,7 @@ public class Film {
     private final Set<Long> likes = new TreeSet<>();
     @NotNull
     private Mpa mpa;
+    private List<Director> directors;
 
     public Map<String, Object> toMap() {
         Map<String, Object> values = new HashMap<>();
@@ -52,4 +53,7 @@ public class Film {
         likes.remove(idUser);
     }
 
+    public void setDirectors(List<Director> list) {
+        this.directors = list;
+    }
 }

@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
 @RestController
 public class FilmController {
-
     private final FilmService filmService;
 
     @Autowired
@@ -57,8 +57,15 @@ public class FilmController {
         return filmService.getFilm(id);
     }
 
+
     @GetMapping(value = "/films/common")
     public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
         return filmService.getCommonFilms(userId, friendId);
+}
+    @GetMapping("/films/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable Long directorId,
+                                               @RequestParam(required = false, defaultValue = "year") String sortBy) {
+        return filmService.getFilmsByDirector(directorId, sortBy);
+
     }
 }
