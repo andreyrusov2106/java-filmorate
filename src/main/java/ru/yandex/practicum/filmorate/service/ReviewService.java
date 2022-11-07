@@ -58,7 +58,7 @@ public class ReviewService {
             throw new ResourceNotFoundException("Film not found");
         }
         Review createdReview = reviewDbStorage.create(review);
-        feedStorage.createEvent(review.getUserId(), Operation.ADD, EventType.REVIEW, review.getFilmId());
+        feedStorage.createEvent(createdReview.getUserId(), Operation.ADD, EventType.REVIEW, createdReview.getReviewId());
         log.info("Review created" + review);
         return createdReview;
     }
@@ -78,8 +78,10 @@ public class ReviewService {
             log.warn("User not found" + review.getFilmId());
             throw new ResourceNotFoundException("Film not found");
         }
-        Review updatedReview = reviewDbStorage.update(review);
-        feedStorage.createEvent(review.getUserId(), Operation.UPDATE, EventType.REVIEW, review.getFilmId());
+        reviewDbStorage.update(review);
+        Review updatedReview = reviewDbStorage.get(review.getReviewId()).
+                orElseThrow(() -> new ResourceNotFoundException("review not found"));
+        feedStorage.createEvent(updatedReview.getUserId(), Operation.UPDATE, EventType.REVIEW, updatedReview.getReviewId());
         log.info("Review updated" + review);
         return updatedReview;
     }
@@ -117,7 +119,6 @@ public class ReviewService {
                 reviewDbStorage.updateUseful(id, 2);
             }
             reviewDbStorage.addReviewLike(id, userId, true);
-            feedStorage.createEvent(userId, Operation.ADD, EventType.LIKE, id);
         }
     }
 
@@ -137,7 +138,6 @@ public class ReviewService {
         if (reviewDbStorage.contains(id, userId, true)) {
             reviewDbStorage.removeReviewLike(id, userId, true);
             reviewDbStorage.updateUseful(id, -1);
-            feedStorage.createEvent(userId, Operation.REMOVE, EventType.LIKE, id);
         }
     }
 
