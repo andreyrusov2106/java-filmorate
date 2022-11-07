@@ -74,21 +74,13 @@ public class FilmDbStorage implements FilmStorage {
             "    limit ?\n" +
             "    )";
 
-    private static final String TOP_N_FILMS_BY_YEAR = "select F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION," +
-            "       R.RATING_ID, R.NAME as rating_name" +
-            "from FILM as F" +
-            "         join RATING as R on F.RATING_ID = R.RATING_ID" +
-            "where F.FILM_ID in (" +
-            "    select F.FILM_ID" +
-            "    from FILM as F" +
-            "    left join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID" +
-            "    left join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID" +
-            "    left join GENRE as G on FG.GENRE_ID = G.GENRE_ID" +
-            "    where EXTRACT(YEAR from F.RELEASE_DATE) = ?" +
-            "    group by F.FILM_ID" +
-            "    order by COUNT(DISTINCT FL.USER_ID) desc" +
-            "    limit ?" +
-            "    )";
+    private static final String TOP_N_FILMS_BY_YEAR = "select F.FILM_ID, F.NAME, F.DESCRIPTION," +
+            " F.RELEASE_DATE, F.DURATION, R.RATING_ID, R.NAME as rating_name from FILM as F" +
+            " join RATING as R on F.RATING_ID = R.RATING_ID where F.FILM_ID in" +
+            " (select F.FILM_ID from FILM as F left join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID" +
+            " left join FILM_GENRE FG on F.FILM_ID = FG.FILM_ID left join GENRE as G on FG.GENRE_ID" +
+            " = G.GENRE_ID where EXTRACT(YEAR from F.RELEASE_DATE) = ? group by F.FILM_ID" +
+            " order by COUNT(DISTINCT FL.USER_ID) desc limit ?)";
 
     private static final String COMMON_FILMS = "SELECT distinct *, RATING.NAME as rating_name FROM (SELECT FILM_ID " +
             "FROM FILM_LIKE " +
