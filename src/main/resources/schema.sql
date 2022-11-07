@@ -1,24 +1,25 @@
 
 --
-drop table IF EXISTS DIRECTOR_FILMS;
+drop table IF EXISTS DIRECTOR_FILMS cascade ;
 
-drop table IF EXISTS DIRECTORS;
+drop table IF EXISTS DIRECTORS cascade ;
 
-drop table IF EXISTS FILM;
+drop table IF EXISTS FILM cascade ;
 
-drop table IF EXISTS FILM_GENRE;
+drop table IF EXISTS FILM_GENRE cascade ;
 
-drop table IF EXISTS FILM_LIKE;
+drop table IF EXISTS FILM_LIKE cascade ;
 
-drop table IF EXISTS FRIENDSHIP;
+drop table IF EXISTS FRIENDSHIP cascade ;
 
-drop table IF EXISTS GENRE;
+drop table IF EXISTS GENRE cascade ;
 
-drop table IF EXISTS RATING;
+drop table IF EXISTS RATING cascade ;
 
-drop table IF EXISTS USERS;
-drop table IF EXISTS REVIEW;
-drop table IF EXISTS REVIEW_LIKE;
+drop table IF EXISTS USERS cascade ;
+drop table IF EXISTS REVIEW cascade ;
+drop table IF EXISTS REVIEW_LIKE cascade ;
+drop table if exists EVENTS cascade ;
 
 
 CREATE TABLE IF NOT EXISTS public.film (
@@ -181,5 +182,18 @@ CREATE TABLE IF NOT EXISTS DIRECTOR_FILMS
     FILM_ID     BIGINT NOT NULL,
     CONSTRAINT FK_DIRECTOR_FILMS1 FOREIGN KEY (DIRECTOR_ID) REFERENCES DIRECTORS (DIRECTOR_ID) ON DELETE CASCADE,
     CONSTRAINT FK_DIRECTOR_FILMS2 FOREIGN KEY (FILM_ID) REFERENCES FILM (FILM_ID) ON DELETE CASCADE
+);
+
+create table EVENTS
+(
+    ID         INTEGER auto_increment
+        primary key,
+    USER_ID    INTEGER,
+    OPERATION  CHARACTER VARYING not null,
+    EVENT_TYPE CHARACTER VARYING not null,
+    TIMESTAMP  TIMESTAMP default LOCALTIMESTAMP,
+    ENTITY_ID  INTEGER,
+    constraint EVENTS_USERS_USER_ID_FK
+        foreign key (USER_ID) references USERS
 );
 
