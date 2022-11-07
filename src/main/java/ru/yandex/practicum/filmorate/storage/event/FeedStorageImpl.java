@@ -14,7 +14,8 @@ public class FeedStorageImpl implements FeedStorage {
     private static final String CREATE_EVENT =
             "insert into EVENTS (USER_ID, OPERATION, EVENT_TYPE, ENTITY_ID) values (?,?,?,?)";
     private static final String FEED_BY_USER_ID =
-            "select * from EVENTS where USER_ID = ?";
+            "select * from EVENTS where user_id in (select FRIEND_ID from FRIENDSHIP where USER_ID = ?)";
+
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -42,4 +43,5 @@ public class FeedStorageImpl implements FeedStorage {
         jdbcTemplate.update(CREATE_EVENT, userId, operation.name(), type.name(), entityId);
         log.info("User with id {} create some event", userId);
     }
+
 }
