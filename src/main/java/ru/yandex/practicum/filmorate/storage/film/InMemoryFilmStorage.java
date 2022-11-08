@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Qualifier
 @Slf4j
@@ -66,5 +66,35 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "method not implemented");
+    }
+
+    public List<Film> getByDirector(Long directorId, String sortBy) {
+        throw new InternalServerException("Method not allowed");
+    }
+
+    @Override
+    public boolean removeFilm(Long id) {
+        return films.remove(id) != null;
+    }
+
+    @Override
+    public List<Film> getByTitleSubstring(String substring) {
+        return films.values().stream().filter(x -> x.getName().contains(substring))
+                .sorted(Comparator.comparingInt(x -> x.getLikes().size()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getByDirectorSubstring(String substring) {
+        return films.values().stream().filter(x -> x.getDirectors().stream()
+                .anyMatch(y -> y.getName().contains(substring)))
+                .sorted(Comparator.comparingInt(x -> x.getLikes().size()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getByDirectorOrTitleSubstring(String substring) {
+        return Stream.concat(getByDirectorSubstring(substring).stream(), getByTitleSubstring(substring).stream())
+                .distinct().collect(Collectors.toList());
     }
 }

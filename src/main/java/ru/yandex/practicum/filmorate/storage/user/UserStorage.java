@@ -17,4 +17,5 @@ public interface UserStorage {
 
     Boolean contains(Long id);
 
+    boolean removeUser(Long id);
 }

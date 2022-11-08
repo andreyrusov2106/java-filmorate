@@ -42,5 +42,8 @@ public class InMemoryUserStorage implements UserStorage {
         return users.get(id);
     }
 
-
+    @Override
+    public boolean removeUser(Long id) {
+        return users.remove(id) != null;
+    }
 }
