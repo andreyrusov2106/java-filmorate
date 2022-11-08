@@ -104,8 +104,6 @@ public class FilmService {
     public List<Film> findAll() {
         List<Film> allFilms = filmStorage.findAll();
         addGenres(allFilms);
-        allFilms.forEach(film ->
-                likeDbStorage.getAllLikes(film.getId()).forEach(film::addLike));
         return allFilms;
     }
 
@@ -149,7 +147,6 @@ public class FilmService {
         }
         Film f = filmStorage.getFilm(id);
         addGenres(f);
-        likeDbStorage.getAllLikes(f.getId()).forEach(f::addLike);
         return f;
     }
 
@@ -159,6 +156,7 @@ public class FilmService {
             return getPopularFilms(count);
         }
         List<Film> topNFilms = filmStorage.findTopFilmsByGenreAndYear(count, genreId, year);
+
         addGenres(topNFilms);
         topNFilms.forEach(film ->
                 likeDbStorage.getAllLikes(film.getId()).forEach(film::addLike));

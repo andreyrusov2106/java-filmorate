@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.director.DirectorFilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,11 +21,9 @@ import java.util.List;
 @Slf4j
 @Component()
 @Qualifier("FilmDbStorage")
-@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final DirectorFilmDbStorage directorFilmDbStorage;
-    private final GenreStorage genreStorage;
     private final String UPDATE_FILM_SQL =
             "UPDATE PUBLIC.FILM " +
                     "SET NAME=?, DESCRIPTION=?, RELEASE_DATE=?, DURATION=? , RATING_ID=? " +
@@ -110,6 +109,11 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE df.director_id=? " +
                     "GROUP BY df.film_id, l.user_id ORDER BY COUNT(l.user_id) DESC";
 
+    @Autowired
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, DirectorFilmDbStorage directorFilmDbStorage) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.directorFilmDbStorage = directorFilmDbStorage;
+    }
 
     @Override
     public Film create(Film film) {
@@ -172,14 +176,6 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.queryForObject(SELECT_FILM_BY_ID_SQL, this::mapRowToFilm, id);
     }
 
-//    private void loadGenres(Film film) {
-//        String sqlQuery = "SELECT genre.id, genre.name FROM genre " +
-//                "JOIN film_genre ON genre.id = film_genre.genre_id " +
-//                "WHERE film_genre.film_id = ?";
-//        List<Genre> genres = jdbcTemplate.query(sqlQuery, genreDStorage.getR, film.getId());
-//        genres.forEach(genre -> film.getGenres().add(genre));
-//    }
-
     @Override
     public List<Film> findTopFilmsByGenreAndYear(int count, int genreId, int year) {
         if (genreId == 0) {
@@ -193,7 +189,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId){
-
         return jdbcTemplate.query(COMMON_FILMS, this::mapRowToFilm, userId, friendId);
     }
 

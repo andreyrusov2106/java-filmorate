@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FeedService;
-import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -20,13 +18,11 @@ public class UserController {
 
     private final FeedService feedService;
     private final UserService userService;
-    private final RecommendationService recommendationService;
 
     @Autowired
-    public UserController(FeedService feedService, UserService userService, RecommendationService recommendationService) {
+    public UserController(FeedService feedService, UserService userService) {
         this.feedService = feedService;
         this.userService = userService;
-        this.recommendationService = recommendationService;
     }
 
     @GetMapping()
@@ -77,10 +73,5 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public void removeUser(@PathVariable Long userId) {
         userService.removeUser(userId);
-    }
-
-    @GetMapping("/{id}/recommendations")
-    public List<Film> findRecommendationsById(@PathVariable Long id) {
-        return recommendationService.getRecommendations(id);
     }
 }
