@@ -68,4 +68,9 @@ public class UserController {
     public List<Event> findFeedByUserId(@Valid @PathVariable long id) {
         return feedService.findFeedByUserId(id);
     }
+
+    @DeleteMapping("/users/{userId}")
+    public void removeUser(@PathVariable Long userId) {
+        userService.removeUser(userId);
+    }
 }
