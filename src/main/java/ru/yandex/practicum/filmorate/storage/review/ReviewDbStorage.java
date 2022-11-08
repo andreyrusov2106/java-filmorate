@@ -44,7 +44,7 @@ public class ReviewDbStorage implements ReviewStorage {
     private final static String INSERT_REVIEW_LIKE_SQL =
             "MERGE INTO PUBLIC.REVIEW_LIKE (REVIEW_ID, USER_ID, IS_LIKE) VALUES(?,?,?)";
     private final static String DELETE_REVIEW_LIKE_SQL =
-            "DELETE PUBLIC.REVIEW_LIKE WHERE REVIEW_ID=? AND USER_ID=? AND IS_LIKE=?";
+            "DELETE FROM PUBLIC.REVIEW_LIKE WHERE REVIEW_ID=? AND USER_ID=? AND IS_LIKE=?";
     private final static String SELECT_REVIEW_LIKE_SQL =
             "SELECT * FROM PUBLIC.REVIEW_LIKE WHERE REVIEW_ID=? AND USER_ID=? AND IS_LIKE=?";
 
@@ -90,7 +90,7 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Optional<Review> get(long id) {
         try {
-            return Optional.of(jdbcTemplate.queryForObject(SELECT_REVIEW_BY_ID_SQL, this::mapRowToReview, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_REVIEW_BY_ID_SQL, this::mapRowToReview, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

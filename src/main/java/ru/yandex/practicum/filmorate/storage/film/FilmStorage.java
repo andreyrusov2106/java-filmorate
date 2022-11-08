@@ -27,4 +27,8 @@ public interface FilmStorage {
     List<Film> getByDirector(Long directorId, String sortBy);
 
     boolean removeFilm(Long id);
+
+    List<Film> getByTitleSubstring(String substring);
+    List<Film> getByDirectorSubstring(String substring);
+    List<Film> getByDirectorOrTitleSubstring(String substring);
 }
