@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
+@RequestMapping("/users")
 @RestController
 public class UserController {
 
@@ -24,52 +25,52 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
+    @GetMapping()
     public List<User> findAll() {
         return userService.findAll();
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping()
     public User create(@RequestBody User user) {
         return userService.create(user);
     }
 
-    @PutMapping(value = "/users")
+    @PutMapping()
     public User update(@RequestBody User user) {
         return userService.update(user);
     }
 
-    @PutMapping(value = "/users/{id}/friends/{friendId}")
+    @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
         userService.addFriend(id, friendId);
     }
 
-    @DeleteMapping(value = "/users/{id}/friends/{friendId}")
+    @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
         userService.removeFriend(id, friendId);
     }
 
-    @GetMapping(value = "/users/{id}")
+    @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
         return userService.getUser(id);
     }
 
-    @GetMapping(value = "/users/{id}/friends/common/{otherId}")
+    @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return userService.getCommonFriends(id, otherId);
     }
 
-    @GetMapping(value = "/users/{id}/friends")
+    @GetMapping("/{id}/friends")
     public List<User> getAllFriends(@PathVariable Long id) {
         return userService.getAllFriends(id);
     }
 
-    @GetMapping(value = "/users/{id}/feed")
+    @GetMapping("/{id}/feed")
     public List<Event> findFeedByUserId(@Valid @PathVariable long id) {
         return feedService.findFeedByUserId(id);
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/{userId}")
     public void removeUser(@PathVariable Long userId) {
         userService.removeUser(userId);
     }

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Slf4j
+@RequestMapping("/films")
 @RestController
 public class FilmController {
     private final FilmService filmService;
@@ -19,32 +20,32 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    @GetMapping("/films")
+    @GetMapping()
     public List<Film> findAll() {
         return filmService.findAll();
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping()
     public Film create(@RequestBody Film film) {
         return filmService.create(film);
     }
 
-    @PutMapping(value = "/films")
+    @PutMapping()
     public Film update(@RequestBody Film film) {
         return filmService.update(film);
     }
 
-    @PutMapping(value = "/films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.addLike(id, userId);
     }
 
-    @DeleteMapping(value = "/films/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.removeLike(id, userId);
     }
 
-    @GetMapping(value = "/films/popular")
+    @GetMapping("/popular")
     public List<Film> findTopFilmsByGenreAndYear(
             @RequestParam(required = false, defaultValue = "10") int count,
             @RequestParam(required = false, defaultValue = "0") int genreId,
@@ -52,24 +53,30 @@ public class FilmController {
         return filmService.findTopFilmsByGenreAndYear(count, genreId, year);
     }
 
-    @GetMapping(value = "/films/{id}")
+    @GetMapping(value = "/{id}")
     public Film getFilm(@PathVariable Long id) {
         return filmService.getFilm(id);
     }
 
 
-    @GetMapping(value = "/films/common")
+    @GetMapping("/common")
     public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
         return filmService.getCommonFilms(userId, friendId);
 }
-    @GetMapping("/films/director/{directorId}")
+    @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsByDirector(@PathVariable Long directorId,
                                                @RequestParam(required = false, defaultValue = "year") String sortBy) {
         return filmService.getFilmsByDirector(directorId, sortBy);
     }
 
-    @DeleteMapping("/films/{filmId}")
+    @DeleteMapping("/{filmId}")
     public void removeFilm(@PathVariable Long filmId) {
         filmService.removeFilm(filmId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> getByName(@RequestParam(required = false) String query,
+                                @RequestParam(required = false) List<String> by) {
+        return filmService.getByName(query, by);
     }
 }

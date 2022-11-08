@@ -189,8 +189,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId){
-            return jdbcTemplate.query(COMMON_FILMS, this::mapRowToFilm, userId, friendId);
-        }
+        return jdbcTemplate.query(COMMON_FILMS, this::mapRowToFilm, userId, friendId);
+    }
 
     public List<Film> getByDirector(Long directorId, String sortBy) {
         if (sortBy.equals("year")) {
@@ -222,5 +222,41 @@ public class FilmDbStorage implements FilmStorage {
     public boolean removeFilm(Long id) {
         String sqlQuery = "DELETE FROM film WHERE film_id = ?";
         return this.jdbcTemplate.update(sqlQuery, id) != 0;
+    }
+
+    @Override
+    public List<Film> getByTitleSubstring(String substring) {
+        String sqlQuery = "SELECT F.*, R.name AS rating_name FROM film F " +
+                "LEFT JOIN rating R ON F.rating_id = R.rating_id " +
+                "LEFT JOIN film_like FL ON F.FILM_ID = FL.FILM_ID " +
+                "WHERE LOWER(F.name) LIKE ? " +
+                "GROUP BY F.FILM_ID ORDER BY COUNT(FL.user_id) DESC";
+        return this.jdbcTemplate.query(sqlQuery, this::mapFilm, '%' + substring + '%');
+    }
+
+    @Override
+    public List<Film> getByDirectorSubstring(String substring) {
+        String sqlQuery = "SELECT F.*, R.name AS rating_name FROM film F " +
+                "LEFT JOIN rating R ON F.rating_id = R.rating_id " +
+                "LEFT JOIN film_like FL ON F.FILM_ID = FL.FILM_ID " +
+                "LEFT JOIN director_films DF ON F.film_id = DF.film_id " +
+                "LEFT JOIN directors D ON DF.director_id = D.director_id " +
+                "WHERE LOWER(D.name) LIKE ? " +
+                "GROUP BY F.FILM_ID ORDER BY COUNT(FL.user_id) DESC";
+        return this.jdbcTemplate.query(sqlQuery, this::mapFilm, '%' + substring + '%');
+    }
+
+    @Override
+    public List<Film> getByDirectorOrTitleSubstring(String substring) {
+        String sqlQuery = "SELECT F.*, R.name AS rating_name FROM film F " +
+                "LEFT JOIN rating R ON F.rating_id = R.rating_id " +
+                "LEFT JOIN film_like FL ON F.FILM_ID = FL.FILM_ID " +
+                "LEFT JOIN director_films DF ON F.film_id = DF.film_id " +
+                "LEFT JOIN directors D ON DF.director_id = D.director_id " +
+                "WHERE LOWER(D.name) LIKE ? OR LOWER(F.name) LIKE ? " +
+                "GROUP BY F.FILM_ID ORDER BY COUNT(FL.user_id) DESC";
+        substring += '%';
+        substring = '%' + substring;
+        return this.jdbcTemplate.query(sqlQuery, this::mapFilm, substring, substring);
     }
 }
