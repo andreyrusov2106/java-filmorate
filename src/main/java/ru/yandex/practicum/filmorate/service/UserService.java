@@ -1,5 +1,4 @@
 package ru.yandex.practicum.filmorate.service;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,8 +25,7 @@ public class UserService {
     private final FeedStorage feedStorage;
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage,
-                       FeedStorage feedStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage, FeedStorage feedStorage) {
         this.userStorage = userStorage;
         this.friendsStorage = friendsStorage;
         this.feedStorage = feedStorage;

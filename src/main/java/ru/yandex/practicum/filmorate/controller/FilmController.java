@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Slf4j
-@RequestMapping("/films")
 @RestController
+@RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 

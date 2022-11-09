@@ -1,5 +1,4 @@
 package ru.yandex.practicum.filmorate.service;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +24,7 @@ import static ru.yandex.practicum.filmorate.validators.Validator1.validateReview
 @Slf4j
 @Service
 public class ReviewService {
+
     private final ReviewDbStorage reviewDbStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
