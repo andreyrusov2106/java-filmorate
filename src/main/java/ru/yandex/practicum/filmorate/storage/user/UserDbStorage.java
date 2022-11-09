@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.*;
 import java.util.List;
 
-
 @Slf4j
 @Component()
 @Qualifier("UserDbStorage")

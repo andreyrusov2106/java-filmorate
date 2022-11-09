@@ -5,6 +5,7 @@ import java.util.*;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
+
     private static long currentId;
     private final Map<Long, User> users = new HashMap<>();
 

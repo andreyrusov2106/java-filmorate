@@ -12,8 +12,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
-@RequestMapping("/users")
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     private final FeedService feedService;
