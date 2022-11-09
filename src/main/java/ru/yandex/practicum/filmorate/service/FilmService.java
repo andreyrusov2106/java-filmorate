@@ -28,22 +28,21 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final GenreStorage genreDbStorage;
-    private final MpaDbStorage mpaDbStorage;
     private final LikeDbStorage likeDbStorage;
     private final FeedStorage feedStorage;
     private final Validator<Film> filmValidator;
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
+    public FilmService (@Qualifier("FilmDbStorage") FilmStorage filmStorage,
                        @Qualifier("UserDbStorage") UserStorage userStorage,
                        GenreStorage genreDbStorage,
-                       MpaDbStorage mpaDbStorage,
                        LikeDbStorage likeDbStorage,
-                       FeedStorage feedStorage, Validator<Film> filmValidator) {
+                       FeedStorage feedStorage,
+                       Validator<Film> filmValidator)
+    {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.genreDbStorage = genreDbStorage;
-        this.mpaDbStorage = mpaDbStorage;
         this.likeDbStorage = likeDbStorage;
         this.feedStorage = feedStorage;
         this.filmValidator = filmValidator;
@@ -51,16 +50,11 @@ public class FilmService {
 
     public Film create(Film film) {
         if (filmStorage.contains(film)) {
-            log.warn("Film already exist");
             throw new ResourceAlreadyExistException("FilmAlreadyExist");
         }
         filmValidator.check(film);
-        if (mpaDbStorage.getMpa(film.getMpa().getId()).isEmpty()) {
-            log.warn("Mpa with id=" + film.getMpa().getId() + " not found");
-            throw new ResourceNotFoundException("Mpa not found");
-        }
         Film createdFilm = filmStorage.create(film);
-        if (film.getGenres() != null) {
+        if (!film.getGenres().isEmpty()) {
             genreDbStorage.removeFilmAllGenre(film.getId());
             film.getGenres()
                     .forEach((Genre idGenre) -> genreDbStorage.addFilmGenre(film.getId(), idGenre.getId()));
@@ -83,8 +77,7 @@ public class FilmService {
             }
             log.info("Film updated" + film);
         } else {
-            log.warn("Film not found" + film);
-            throw new ResourceNotFoundException("Film not found");
+            throw new ResourceNotFoundException("Film not found" + film);
         }
         return updatedFilm;
     }
@@ -104,12 +97,10 @@ public class FilmService {
 
     private void CheckFilmAndUser(Long idFilm, Long idUser) {
         if (!filmStorage.contains(idFilm)) {
-            log.warn("Film with id=" + idFilm + " not found");
-            throw new ResourceNotFoundException("Film not found");
+            throw new ResourceNotFoundException("Film with id=" + idFilm + " not found");
         }
         if (!userStorage.contains(idUser)) {
-            log.warn("User with id=" + idUser + " not found");
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException("User with id=" + idUser + " not found");
         }
         filmStorage.getFilm(idFilm);
     }
@@ -129,8 +120,7 @@ public class FilmService {
 
     public Film getFilm(Long id) {
         if (!filmStorage.contains(id)) {
-            log.warn("Film with id=" + id + " not found");
-            throw new ResourceNotFoundException("Film not found");
+            throw new ResourceNotFoundException("Film with id=" + id + " not found");
         }
         Film f = filmStorage.getFilm(id);
         addGenreToFilm(f);

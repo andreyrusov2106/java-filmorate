@@ -17,7 +17,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse FilmAlreadyExist(final ResourceAlreadyExistException e) {
+    public ErrorResponse ResourceAlreadyExist(final ResourceAlreadyExistException e) {
         log.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
