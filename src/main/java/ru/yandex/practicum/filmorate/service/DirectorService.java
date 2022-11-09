@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.service.validator.DirectorValidator;
+import ru.yandex.practicum.filmorate.service.validator.Validator;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import javax.validation.ValidationException;
 import java.util.Collection;
@@ -15,10 +17,12 @@ import java.util.Optional;
 public class DirectorService {
 
     private final DirectorStorage storage;
+    private final Validator<Director> directorValidator;
 
     @Autowired
-    public DirectorService(@Qualifier("DirectorDbStorage") DirectorStorage storage) {
+    public DirectorService(@Qualifier("DirectorDbStorage") DirectorStorage storage, DirectorValidator directorValidator) {
         this.storage = storage;
+        this.directorValidator = directorValidator;
     }
 
     public Director getById(Long directorId) {
@@ -30,12 +34,7 @@ public class DirectorService {
     }
 
     public Director addDirector(Director director) {
-        if (director == null) {
-            throw new ValidationException("Director object is empty");
-        }
-        if (director.getName().trim().isEmpty()) {
-            throw new ValidationException("Field name is empty");
-        }
+        directorValidator.check(director);
         Long director_id = storage.insert(director);
         if (director_id == null) {
             throw new ValidationException(String.format("Cannot create director: %s", director.getName()));
@@ -44,12 +43,7 @@ public class DirectorService {
     }
 
     public Director updateDirector(Director director) {
-        if (director == null) {
-            throw new ValidationException("Director object is empty");
-        }
-        if (director.getName().trim().isEmpty()) {
-            throw new ValidationException("Field name is empty");
-        }
+        directorValidator.check(director);
         getObject(director.getId());
         if (!storage.update(director)) {
             throw new ValidationException(String.format("Cannot update director: %s", director.getName()));

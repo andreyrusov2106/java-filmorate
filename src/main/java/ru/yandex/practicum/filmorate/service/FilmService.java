@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exceptions.ResourceAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.validator.Validator;
 import ru.yandex.practicum.filmorate.storage.event.EventType;
 import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.event.Operation;

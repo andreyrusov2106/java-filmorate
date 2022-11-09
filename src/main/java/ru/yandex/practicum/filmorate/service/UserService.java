@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.validator.Validator;
 import ru.yandex.practicum.filmorate.storage.event.EventType;
 import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.event.Operation;

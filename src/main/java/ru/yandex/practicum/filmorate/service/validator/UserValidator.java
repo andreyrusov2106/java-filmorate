@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.validator;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

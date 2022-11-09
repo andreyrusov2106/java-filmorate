@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import javax.validation.ValidationException;
 
 @Slf4j
-@RestControllerAdvice()
+@RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler

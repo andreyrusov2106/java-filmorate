@@ -26,7 +26,6 @@ public class GenreService {
         if (genre.isPresent()) {
             return genre.get();
         } else {
-            log.warn("Genre not found" + idGenre);
             throw new ResourceNotFoundException("Genre not found");
         }
     }

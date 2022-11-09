@@ -26,7 +26,6 @@ public class MpaService {
         if (mpa.isPresent()) {
             return mpa.get();
         } else {
-            log.warn("Mpa not found" + idMpa);
             throw new ResourceNotFoundException("Mpa not found");
         }
     }
