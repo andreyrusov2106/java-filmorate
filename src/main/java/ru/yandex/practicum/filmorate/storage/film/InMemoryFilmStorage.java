@@ -1,5 +1,4 @@
 package ru.yandex.practicum.filmorate.storage.film;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -7,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.model.Film;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,6 +14,7 @@ import java.util.stream.Stream;
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
+
     private static long currentId;
     private final Map<Long, Film> films = new HashMap<>();
 

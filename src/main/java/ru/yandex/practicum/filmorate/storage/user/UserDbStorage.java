@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.user;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.sql.*;
 import java.util.List;
 
@@ -15,16 +13,15 @@ import java.util.List;
 @Slf4j
 @Component()
 @Qualifier("UserDbStorage")
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
-    private final JdbcTemplate jdbcTemplate;
-    private final String UPDATE_USER_SQL =
-            "UPDATE PUBLIC.USERS SET EMAIL=?, LOGIN=?, NAME=?, birthday=? WHERE USER_ID=?";
-    private final String SELECT_USER_BY_ID_SQL = "SELECT * FROM PUBLIC.USERS WHERE USER_ID=?";
-    private final String SELECT_ALL_USER_SQL = "SELECT * FROM PUBLIC.USERS";
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
+
+    private final static String UPDATE_USER_SQL =
+            "UPDATE PUBLIC.USERS SET EMAIL=?, LOGIN=?, NAME=?, birthday=? WHERE USER_ID=?";
+    private final static String SELECT_USER_BY_ID_SQL = "SELECT * FROM PUBLIC.USERS WHERE USER_ID=?";
+    private final static String SELECT_ALL_USER_SQL = "SELECT * FROM PUBLIC.USERS";
 
     @Override
     public User create(User user) {

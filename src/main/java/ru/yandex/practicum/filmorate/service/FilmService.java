@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,11 +19,9 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static ru.yandex.practicum.filmorate.validators.Validator.validateFilm;
 
 @Slf4j
@@ -47,7 +46,6 @@ public class FilmService {
         this.genreDbStorage = genreDbStorage;
         this.mpaDbStorage = mpaDbStorage;
         this.likeDbStorage = likeDbStorage;
-
         this.feedStorage = feedStorage;
     }
 

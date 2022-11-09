@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.event.EventType;
 import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
@@ -14,18 +12,16 @@ import ru.yandex.practicum.filmorate.storage.event.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static ru.yandex.practicum.filmorate.validators.Validator.validateReview;
-
 
 @Slf4j
 @Service
 public class ReviewService {
+
     private final ReviewDbStorage reviewDbStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;

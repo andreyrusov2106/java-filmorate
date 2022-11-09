@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
-
 import java.util.List;
 
 @Slf4j
