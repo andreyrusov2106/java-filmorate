@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.review;
-
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Review;
-
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface ReviewStorage {
+
     Review create(Review review);
 
     Review update(Review review);

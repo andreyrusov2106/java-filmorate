@@ -1,30 +1,29 @@
 package ru.yandex.practicum.filmorate.storage.director;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 @Slf4j
-@Repository
+@Component()
+@Qualifier("DirectorFilmDbStorage")
+@RequiredArgsConstructor
 public class DirectorFilmDbStorage implements DirectorFilmStorage {
+
     private final JdbcTemplate jdbcTemplate;
-    private final String SELECT_BY_FILM_SQL =
+
+    private final static String SELECT_BY_FILM_SQL =
             "SELECT d.director_id, d.name FROM director_films df " +
                     "JOIN directors d ON df.director_id = d.director_id " +
                     "WHERE df.film_id=?";
-    private final String INSERT_SQL = "INSERT INTO director_films (director_id, film_id) VALUES ";
-    private final String DELETE_SQL = "DELETE FROM director_films WHERE film_id=?";
-
-    @Autowired
-    public DirectorFilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final static String INSERT_SQL = "INSERT INTO director_films (director_id, film_id) VALUES ";
+    private final static String DELETE_SQL = "DELETE FROM director_films WHERE film_id=?";
 
     @Override
     public List<Director> getByFilm(Long filmId) {
@@ -38,7 +37,7 @@ public class DirectorFilmDbStorage implements DirectorFilmStorage {
             if (film.getDirectors().size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 for (Director director : film.getDirectors()) {
-                    sb.append("(" + director.getId() + "," + film.getId() + "),");
+                    sb.append("(").append(director.getId()).append(",").append(film.getId()).append("),");
                 }
                 jdbcTemplate.update(INSERT_SQL + sb.substring(0, sb.length() - 1));
             }
@@ -47,11 +46,7 @@ public class DirectorFilmDbStorage implements DirectorFilmStorage {
 
     @Override
     public boolean delete(Long filmId) {
-        if (jdbcTemplate.update(DELETE_SQL, filmId) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return jdbcTemplate.update(DELETE_SQL, filmId) > 0;
     }
 
     private Director mapDirector(ResultSet row, int rowNum) throws SQLException {

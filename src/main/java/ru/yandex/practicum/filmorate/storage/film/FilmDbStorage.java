@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.director.DirectorFilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,28 +21,29 @@ import java.util.List;
 @Qualifier("FilmDbStorage")
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
+
     private final JdbcTemplate jdbcTemplate;
     private final DirectorFilmDbStorage directorFilmDbStorage;
-    private final GenreStorage genreStorage;
-    private final String UPDATE_FILM_SQL =
+
+    private final static String UPDATE_FILM_SQL =
             "UPDATE PUBLIC.FILM " +
                     "SET NAME=?, DESCRIPTION=?, RELEASE_DATE=?, DURATION=? , RATING_ID=? " +
                     "WHERE FILM_ID=?";
-    private static final String SELECT_FILM_BY_ID_SQL =
+    private final static String SELECT_FILM_BY_ID_SQL =
             "SELECT F.*, R.NAME AS RATING_NAME " +
                     "FROM PUBLIC.FILM F LEFT JOIN PUBLIC.RATING R ON F.RATING_ID=R.RATING_ID " +
                     "WHERE F.FILM_ID=?";
-    private static final String SELECT_ALL_FILM_SQL =
+    private final static String SELECT_ALL_FILM_SQL =
             "SELECT F.*, r.NAME AS RATING_NAME " +
                     "FROM PUBLIC.FILM f LEFT JOIN PUBLIC.RATING r ON F.RATING_ID=R.RATING_ID";
 
-    private static final String SELECT_TOP10_FILMS =
+    private final static String SELECT_TOP10_FILMS =
             "SELECT F.*, R.NAME AS RATING_NAME, COUNT(FL.USER_ID) LIKES " +
                     "FROM PUBLIC.FILM F LEFT JOIN PUBLIC.FILM_LIKE FL ON F.FILM_ID = FL.FILM_ID " +
                     "LEFT JOIN PUBLIC.RATING R ON F.RATING_ID = R.RATING_ID " +
                     "GROUP BY F.FILM_ID ORDER BY LIKES DESC LIMIT ?";
 
-    private static final String TOP_N_FILMS_BY_GENRE_AND_YEAR = "select F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION,\n" +
+    private final static String TOP_N_FILMS_BY_GENRE_AND_YEAR = "select F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION,\n" +
             "       R.RATING_ID, R.NAME as rating_name\n" +
             "from FILM as F\n" +
             "         join RATING as R on F.RATING_ID = R.RATING_ID\n" +
@@ -59,7 +59,7 @@ public class FilmDbStorage implements FilmStorage {
             "    limit ?\n" +
             "    )";
 
-    private static final String TOP_N_FILMS_BY_GENRE = "select F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION,\n" +
+    private final static String TOP_N_FILMS_BY_GENRE = "select F.FILM_ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION,\n" +
             "       R.RATING_ID, R.NAME as rating_name\n" +
             "from FILM as F\n" +
             "         join RATING as R on F.RATING_ID = R.RATING_ID\n" +
@@ -75,7 +75,7 @@ public class FilmDbStorage implements FilmStorage {
             "    limit ?\n" +
             "    )";
 
-    private static final String TOP_N_FILMS_BY_YEAR = "select F.FILM_ID, F.NAME, F.DESCRIPTION," +
+    private final static String TOP_N_FILMS_BY_YEAR = "select F.FILM_ID, F.NAME, F.DESCRIPTION," +
             " F.RELEASE_DATE, F.DURATION, R.RATING_ID, R.NAME as rating_name from FILM as F" +
             " join RATING as R on F.RATING_ID = R.RATING_ID where F.FILM_ID in" +
             " (select F.FILM_ID from FILM as F left join FILM_LIKE FL on F.FILM_ID = FL.FILM_ID" +
@@ -83,7 +83,7 @@ public class FilmDbStorage implements FilmStorage {
             " = G.GENRE_ID where EXTRACT(YEAR from F.RELEASE_DATE) = ? group by F.FILM_ID" +
             " order by COUNT(DISTINCT FL.USER_ID) desc limit ?)";
 
-    private static final String COMMON_FILMS = "SELECT distinct *, RATING.NAME as rating_name FROM (SELECT FILM_ID " +
+    private final static String COMMON_FILMS = "SELECT distinct *, RATING.NAME as rating_name FROM (SELECT FILM_ID " +
             "FROM FILM_LIKE " +
             "WHERE USER_ID = ? " +
             "INTERSECT SELECT distinct FILM_ID " +
@@ -97,19 +97,18 @@ public class FilmDbStorage implements FilmStorage {
             "JOIN RATING  ON RATING.RATING_ID=FILM.RATING_ID " +
             "ORDER BY f.rate DESC ";
 
-    private final String SELECT_SORT_YEAR_SQL =
+    private final static String SELECT_SORT_YEAR_SQL =
             "SELECT df.film_id " +
                     "FROM director_films df " +
                     "JOIN film f ON df.film_id = f.film_id " +
                     "WHERE df.director_id=? ORDER BY f.release_date";
 
-    private final String SELECT_SORT_LIKE_SQL =
+    private final static String SELECT_SORT_LIKE_SQL =
             "SELECT df.film_id " +
                     "FROM director_films df " +
                     "LEFT JOIN film_like l ON df.film_id = l.film_id " +
                     "WHERE df.director_id=? " +
                     "GROUP BY df.film_id, l.user_id ORDER BY COUNT(l.user_id) DESC";
-
 
     @Override
     public Film create(Film film) {
@@ -171,14 +170,6 @@ public class FilmDbStorage implements FilmStorage {
     public Film getFilm(Long id) {
         return jdbcTemplate.queryForObject(SELECT_FILM_BY_ID_SQL, this::mapRowToFilm, id);
     }
-
-//    private void loadGenres(Film film) {
-//        String sqlQuery = "SELECT genre.id, genre.name FROM genre " +
-//                "JOIN film_genre ON genre.id = film_genre.genre_id " +
-//                "WHERE film_genre.film_id = ?";
-//        List<Genre> genres = jdbcTemplate.query(sqlQuery, genreDStorage.getR, film.getId());
-//        genres.forEach(genre -> film.getGenres().add(genre));
-//    }
 
     @Override
     public List<Film> findTopFilmsByGenreAndYear(int count, int genreId, int year) {

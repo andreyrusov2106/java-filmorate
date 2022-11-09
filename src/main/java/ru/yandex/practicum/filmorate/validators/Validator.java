@@ -1,16 +1,13 @@
 package ru.yandex.practicum.filmorate.validators;
-
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.time.LocalDate;
 import java.time.Month;
 
 public class Validator {
     public static void validateFilm(Film film) {
-
         if (film.getName() == null || film.getName().isBlank()) {
             throw new ValidationException("Film name is empty");
         }
@@ -26,7 +23,6 @@ public class Validator {
     }
 
     public static void validateUser(User user) {
-
         if (user.getEmail() == null || user.getEmail().isBlank() && !user.getEmail().contains("@")) {
             throw new ValidationException("Invalid email");
         }
@@ -37,8 +33,8 @@ public class Validator {
             throw new ValidationException("Birthday is after now");
         }
     }
-    public static void validateReview(Review review) {
 
+    public static void validateReview(Review review) {
         if (review.getUserId() == null) {
             throw new ValidationException("Invalid UserId");
         }
@@ -51,7 +47,5 @@ public class Validator {
         if (review.getContent() == null || review.getContent().isBlank()) {
             throw new ValidationException("Invalid Content");
         }
-
-
     }
 }

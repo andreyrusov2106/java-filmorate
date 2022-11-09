@@ -1,30 +1,25 @@
 package ru.yandex.practicum.filmorate.storage.review;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-
 import ru.yandex.practicum.filmorate.model.Review;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Component()
 @Qualifier("ReviewDbStorage")
+@RequiredArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
-    private final JdbcTemplate jdbcTemplate;
 
-    public ReviewDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     private final static String UPDATE_REVIEW_SQL =
             "UPDATE PUBLIC.REVIEW " +
@@ -47,7 +42,6 @@ public class ReviewDbStorage implements ReviewStorage {
             "DELETE FROM PUBLIC.REVIEW_LIKE WHERE REVIEW_ID=? AND USER_ID=? AND IS_LIKE=?";
     private final static String SELECT_REVIEW_LIKE_SQL =
             "SELECT * FROM PUBLIC.REVIEW_LIKE WHERE REVIEW_ID=? AND USER_ID=? AND IS_LIKE=?";
-
 
     @Override
     public Review create(Review review) {

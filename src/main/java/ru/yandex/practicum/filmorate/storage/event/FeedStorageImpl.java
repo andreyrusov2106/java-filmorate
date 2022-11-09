@@ -1,27 +1,22 @@
 package ru.yandex.practicum.filmorate.storage.event;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Event;
-
 import java.util.List;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class FeedStorageImpl implements FeedStorage {
+
     private static final String CREATE_EVENT =
             "insert into EVENTS (USER_ID, OPERATION, EVENT_TYPE, ENTITY_ID) values (?,?,?,?)";
     private static final String FEED_BY_USER_ID =
             "select * from EVENTS where USER_ID = ?";
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public FeedStorageImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Event> findFeedByUserId(long id) {
@@ -42,5 +37,4 @@ public class FeedStorageImpl implements FeedStorage {
         jdbcTemplate.update(CREATE_EVENT, userId, operation.name(), type.name(), entityId);
         log.info("User with id {} create some event", userId);
     }
-
 }
