@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -12,17 +14,15 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 public class Film {
-    @NotNull
     private long id;
-    @NotNull
+    @NotEmpty
     private String name;
-    @NotNull
+    @NotEmpty
     private String description;
-    @NotNull
     private LocalDate releaseDate;
-    @NotNull
+    @Positive
     private Long duration;
-    @NotNull
+    @Positive
     private Integer rate;
     private final Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
     private final Set<Long> likes = new TreeSet<>();

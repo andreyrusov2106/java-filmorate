@@ -1,13 +1,14 @@
 package ru.yandex.practicum.filmorate.validators;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.ValidationException;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ValidatorTest {
     private static final String LENGTH_201 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
@@ -27,7 +28,7 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> Validator1.validateFilm(f)
         );
         assertEquals("Film name is empty", exception.getMessage());
     }
@@ -44,7 +45,7 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> Validator1.validateFilm(f)
         );
         assertEquals("Description is longer than 200", exception.getMessage());
     }
@@ -61,7 +62,7 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> Validator1.validateFilm(f)
         );
         assertEquals("Release date is before 28 december 1895", exception.getMessage());
     }
@@ -78,7 +79,7 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> Validator1.validateFilm(f)
         );
         assertEquals("Duration is negative", exception.getMessage());
     }
@@ -94,7 +95,7 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateUser(u)
+                () -> Validator1.validateUser(u)
         );
         assertEquals("Invalid email", exception.getMessage());
     }
@@ -110,7 +111,7 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateUser(u)
+                () -> Validator1.validateUser(u)
         );
         assertEquals("Login is empty or contains spaces", exception.getMessage());
     }
@@ -126,7 +127,7 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateUser(u)
+                () -> Validator1.validateUser(u)
         );
         assertEquals("Birthday is after now", exception.getMessage());
     }

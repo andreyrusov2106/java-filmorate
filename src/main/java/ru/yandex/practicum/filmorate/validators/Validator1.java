@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.validators;
 
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.Month;
 
-public class Validator {
+public class Validator1 {
     public static void validateFilm(Film film) {
 
         if (film.getName() == null || film.getName().isBlank()) {

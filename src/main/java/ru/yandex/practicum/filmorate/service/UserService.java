@@ -4,19 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.event.EventType;
 import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.event.Operation;
 import ru.yandex.practicum.filmorate.storage.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.storage.event.Operation;
 
+import javax.validation.ValidationException;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.validators.Validator.validateUser;
+import static ru.yandex.practicum.filmorate.validators.Validator1.validateUser;
 
 @Slf4j
 @Service
@@ -27,14 +26,14 @@ public class UserService {
     private final FeedStorage feedStorage;
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage, FeedStorage feedStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage,
+                       FeedStorage feedStorage) {
         this.userStorage = userStorage;
         this.friendsStorage = friendsStorage;
         this.feedStorage = feedStorage;
     }
 
     public User create(User user) {
-        //if (userStorage.contains(user)) throw new UserAlreadyExistException("UserAlreadyExist");
         try {
             validateUser(user);
         } catch (ValidationException exception) {
@@ -111,7 +110,7 @@ public class UserService {
 
     public List<User> getAllFriends(Long id) {
         if (!this.userStorage.contains(id)) {
-            throw new ObjectNotFoundException("There is no user with such id");
+            throw new ResourceNotFoundException("There is no user with such id");
         }
         List<User> allFriends = friendsStorage.getAllFriends(id);
         log.info(String.format("All friends for user with id=%d is %s", id, allFriends));

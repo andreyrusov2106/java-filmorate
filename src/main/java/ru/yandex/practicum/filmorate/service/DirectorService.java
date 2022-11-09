@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 
@@ -65,7 +65,7 @@ public class DirectorService {
     private Director getObject(Long directorId) {
         Optional<Director> director = storage.findById(directorId);
         if (director.isEmpty()) {
-            throw new ObjectNotFoundException(String.format("Director not found with id: %s", directorId));
+            throw new ResourceNotFoundException(String.format("Director not found with id: %s", directorId));
         }
         return director.get();
     }
