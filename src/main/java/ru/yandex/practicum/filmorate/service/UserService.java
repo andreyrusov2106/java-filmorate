@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,10 +12,7 @@ import ru.yandex.practicum.filmorate.storage.event.Operation;
 import ru.yandex.practicum.filmorate.storage.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import javax.validation.ValidationException;
 import java.util.List;
-
-import static ru.yandex.practicum.filmorate.validators.Validator1.validateUser;
 
 @Slf4j
 @Service
@@ -23,36 +21,25 @@ public class UserService {
     private final UserStorage userStorage;
     private final FriendsStorage friendsStorage;
     private final FeedStorage feedStorage;
+    private final Validator<User> userValidator;
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage, FeedStorage feedStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FriendsStorage friendsStorage, FeedStorage feedStorage, Validator<User> userValidator) {
         this.userStorage = userStorage;
         this.friendsStorage = friendsStorage;
         this.feedStorage = feedStorage;
+        this.userValidator = userValidator;
     }
 
     public User create(User user) {
-        try {
-            validateUser(user);
-        } catch (ValidationException exception) {
-            log.warn(exception.getMessage());
-            throw exception;
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+        userValidator.check(user);
         User createdUser = userStorage.create(user);
         log.info("User created" + createdUser);
         return createdUser;
     }
 
     public User update(User user) {
-        try {
-            validateUser(user);
-        } catch (ValidationException exception) {
-            log.warn(exception.getMessage());
-            throw exception;
-        }
+        userValidator.check(user);
         User updatedUser;
         if (userStorage.contains(user)) {
             if (user.getName().isBlank()) {
@@ -61,8 +48,7 @@ public class UserService {
             updatedUser = userStorage.update(user);
             log.info("User updated" + updatedUser);
         } else {
-            log.warn("User not found" + user);
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException("User not found" + user);
         }
         return updatedUser;
     }
@@ -75,15 +61,13 @@ public class UserService {
         if (userStorage.contains(id)) {
             return userStorage.getUser(id);
         } else {
-            log.warn("User with id not found" + id);
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException("User with id not found" + id);
         }
     }
 
     public void addFriend(Long id, Long idFriend) {
         if (!(userStorage.contains(id) && userStorage.contains(idFriend))) {
-            log.warn("User with id not found" + id);
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException("User with id not found" + id);
         }
         friendsStorage.addFriend(id, idFriend);
         feedStorage.createEvent(id, Operation.ADD, EventType.FRIEND, idFriend);
@@ -92,8 +76,7 @@ public class UserService {
 
     public void removeFriend(Long id, Long idFriend) {
         if (!(userStorage.contains(id) && userStorage.contains(idFriend))) {
-            log.warn("User with id not found" + id);
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException("User with id not found" + id);
         }
         friendsStorage.removeFriend(id, idFriend);
         feedStorage.createEvent(id, Operation.REMOVE, EventType.FRIEND, idFriend);
