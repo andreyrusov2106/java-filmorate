@@ -1,17 +1,15 @@
 package ru.yandex.practicum.filmorate;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
+
+import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.friends.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
@@ -21,137 +19,40 @@ import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @SpringBootTest
 @AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmorateApplicationTest {
-    private static UserDbStorage userStorage;
-    private static FilmDbStorage filmStorage;
-    private static FriendDbStorage friendStorage;
-    private static MpaDbStorage mpaStorage;
-    private static LikeDbStorage likeStorage;
-    private static GenreDbStorage genreStorage;
-    private static ReviewStorage reviewStorage;
+    private final UserDbStorage userStorage;
+    private final FilmDbStorage filmStorage;
+    private final FriendDbStorage friendStorage;
+    private final MpaDbStorage mpaStorage;
+    private final LikeDbStorage likeStorage;
+    private final GenreDbStorage genreStorage;
+    private final ReviewStorage reviewStorage;
+    private final FilmService filmService;
 
-
-    @BeforeAll
-    public static void setUp(@Autowired UserDbStorage userStorage,
-                             @Autowired FilmDbStorage filmDbStorage,
-                             @Autowired FriendDbStorage friendStorage,
-                             @Autowired MpaDbStorage mpaStorage,
-                             @Autowired LikeDbStorage likeStorage,
-                             @Autowired GenreDbStorage genreStorage,
-                             @Autowired ReviewStorage reviewStorage
-    ){
-        setUserStorage(userStorage);
-        setFilmStorage(filmDbStorage);
-        setFriendStorageStorage(friendStorage);
-        setLikeStorage(likeStorage);
-        setMpaStorage(mpaStorage);
-        setGenreStorage(genreStorage);
-        setReviewStorage(reviewStorage);
-
-        User u = User.builder()
-                .email("email")
-                .login("login")
-                .name("name")
-                .birthday(LocalDate.now().minusYears(20))
-                .build();
-        User createdUser=userStorage.create(u);
-        Film f  = Film.builder()
-                .name("name")
-                .description("description")
-                .releaseDate(LocalDate.now())
-                .duration(1000L)
-                .mpa(Mpa.builder().id(1).build())
-                .build();
-        filmDbStorage.create(f);
-        User u2 = User.builder()
-                .email("email")
-                .login("login")
-                .name("name")
-                .birthday(LocalDate.now().minusYears(20))
-                .build();
-        User createdUser2=userStorage.create(u2);
-        User u3 = User.builder()
-                .email("email")
-                .login("login")
-                .name("name")
-                .birthday(LocalDate.now().minusYears(20))
-                .build();
-        User createdUser3=userStorage.create(u3);
-        friendStorage.addFriend(createdUser.getId(),createdUser2.getId());
-        friendStorage.addFriend(createdUser3.getId(),createdUser2.getId());
-        friendStorage.addFriend(createdUser3.getId(),createdUser.getId());
-        Review r1=Review.builder()
-                .useful(5)
-                .userId(1L)
-                .filmId(1L)
-                .isPositive(true)
-                .content("This film is soo bad.")
-                .build();
-        reviewStorage.create(r1);
-        Review r2=Review.builder()
-                .useful(5)
-                .userId(1L)
-                .filmId(1L)
-                .isPositive(true)
-                .content("This film is soo bad.")
-                .build();
-        reviewStorage.create(r2);
-        Review r3=Review.builder()
-                .useful(5)
-                .userId(1L)
-                .filmId(1L)
-                .isPositive(true)
-                .content("This film is soo bad.")
-                .build();
-        reviewStorage.create(r2);
-
-
-    }
-
-    @AfterAll
-    @Sql({"/schema.sql", "/data.sql"})
-    public static void clear() {
-        System.out.println("database cleared");
-    }
-
-    public static void setUserStorage(UserDbStorage userStorage) {
-        FilmorateApplicationTest.userStorage = userStorage;
-
-    }
-    public static void setFilmStorage(FilmDbStorage filmDbStorage) {
-        FilmorateApplicationTest.filmStorage = filmDbStorage;
-
-    }
-    public static void setFriendStorageStorage(FriendDbStorage friendStorage) {
-        FilmorateApplicationTest.friendStorage = friendStorage;
-
-    }
-
-    public static void setMpaStorage(MpaDbStorage mpaStorage) {
-        FilmorateApplicationTest.mpaStorage = mpaStorage;
-    }
-
-    public static void setLikeStorage(LikeDbStorage likeStorage) {
-        FilmorateApplicationTest.likeStorage = likeStorage;
-    }
-
-    public static void setGenreStorage(GenreDbStorage genreStorage) {
-        FilmorateApplicationTest.genreStorage = genreStorage;
-    }
-    public static void setReviewStorage(ReviewStorage reviewStorage) {
-        FilmorateApplicationTest.reviewStorage = reviewStorage;
+    @Test
+    public void testBeans() {
+        Assertions.assertThat(filmStorage).isNotNull();
+        Assertions.assertThat(userStorage).isNotNull();
+        Assertions.assertThat(friendStorage).isNotNull();
+        Assertions.assertThat(mpaStorage).isNotNull();
+        Assertions.assertThat(likeStorage).isNotNull();
+        Assertions.assertThat(genreStorage).isNotNull();
+        Assertions.assertThat(reviewStorage).isNotNull();
     }
 
     //UserTests
     @Test
+    @Sql({"/schema.sql", "/data.sql"})
     public void testCreateUser() {
         User u = User.builder()
                 .email("email")
@@ -159,18 +60,19 @@ class FilmorateApplicationTest {
                 .name("name")
                 .birthday(LocalDate.now().minusYears(20))
                 .build();
-        User createdUser=userStorage.create(u);
-        assertThat(createdUser).hasFieldOrPropertyWithValue("id", 4L);
+        User createdUser = userStorage.create(u);
+        assertThat(createdUser).hasFieldOrPropertyWithValue("id", 1L);
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testFindUserById() {
-
-        User  user1 = userStorage.getUser(1L);
+        User user1 = userStorage.getUser(1L);
         assertThat(user1).hasFieldOrPropertyWithValue("id", 1L);
-
     }
 
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testFindUserByWrongId() {
 
         final EmptyResultDataAccessException exception = assertThrows(
@@ -180,7 +82,9 @@ class FilmorateApplicationTest {
         assertEquals("Incorrect result size: expected 1, actual 0", exception.getMessage());
 
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testUpdateUser() {
         User u = User.builder()
                 .id(1L)
@@ -189,35 +93,41 @@ class FilmorateApplicationTest {
                 .name("name")
                 .birthday(LocalDate.now().minusYears(20))
                 .build();
-        User updatesUser=userStorage.update(u);
+        User updatesUser = userStorage.update(u);
         assertThat(updatesUser).hasFieldOrPropertyWithValue("email", "email2");
     }
 
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testGetAllUsers() {
-        var users=userStorage.findAll();
+        var users = userStorage.findAll();
         assertEquals(3, users.size(), "Неверное количество пользователей.");
     }
+
     //FilmTests
     @Test
+    @Sql({"/schema.sql", "/data.sql"})
     public void testCreateFilm() {
-        Film f  = Film.builder()
+        Film f = Film.builder()
                 .name("name2")
                 .description("description2")
                 .releaseDate(LocalDate.now())
                 .duration(1000L)
                 .mpa(Mpa.builder().id(1).build())
                 .build();
-        Film createdFilm= filmStorage.create(f);
-        assertThat(createdFilm).hasFieldOrPropertyWithValue("id", 3L);
+        Film createdFilm = filmStorage.create(f);
+        assertThat(createdFilm).hasFieldOrPropertyWithValue("id", 1L);
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testFindFilmById() {
-        Film film1= filmStorage.getFilm(1L);
+        Film film1 = filmStorage.getFilm(1L);
         assertThat(film1).hasFieldOrPropertyWithValue("id", 1L);
     }
 
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testFindFilmByWrongId() {
 
         final EmptyResultDataAccessException exception = assertThrows(
@@ -228,8 +138,9 @@ class FilmorateApplicationTest {
     }
 
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testUpdateFilm() {
-        Film f  = Film.builder()
+        Film f = Film.builder()
                 .id(1L)
                 .name("name3")
                 .description("description2")
@@ -237,104 +148,173 @@ class FilmorateApplicationTest {
                 .duration(1000L)
                 .mpa(Mpa.builder().id(1).build())
                 .build();
-        Film updatedFilm= filmStorage.update(f);
+        Film updatedFilm = filmStorage.update(f);
         assertThat(updatedFilm).hasFieldOrPropertyWithValue("name", "name3");
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testGetAllFilms() {
-        var films=filmStorage.findAll();
-        assertEquals(1, films.size(), "Неверное количество фильмов.");
+        var films = filmStorage.findAll();
+        assertEquals(3, films.size(), "Неверное количество фильмов.");
     }
+
     //FriendsTests
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testGetFriendship() {
-        var users=friendStorage.getAllFriends(1L);
-        assertEquals(1, users.size(), "Неверное количество друзей.");
+        var users = friendStorage.getAllFriends(1L);
+        assertEquals(2, users.size(), "Неверное количество друзей.");
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testGetCommonFriends() {
-        var users=friendStorage.getCommonFriends(1L,3L);
+        var users = friendStorage.getCommonFriends(1L, 3L);
         assertEquals(1, users.size(), "Неверное количество друзей.");
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testRemoveFriendship() {
-        friendStorage.removeFriend(3L,1L);
-        var users=friendStorage.getAllFriends(3L);
+        friendStorage.removeFriend(1L, 3L);
+        var users = friendStorage.getAllFriends(3L);
         assertEquals(1, users.size(), "Неверное количество друзей.");
     }
+
     //MpaTests
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testGetAllMpa() {
-        var mpas=mpaStorage.getAllMpa();
+        var mpas = mpaStorage.getAllMpa();
         assertEquals(5, mpas.size(), "Неверное количество Mpa.");
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testGetMpa() {
-        var mpa=mpaStorage.getMpa(1);
+        var mpa = mpaStorage.getMpa(1);
         assertThat(mpa).isPresent().hasValueSatisfying(mpa1 ->
                 assertThat(mpa1).hasFieldOrPropertyWithValue("name", "G")
         );
     }
+
     //LikeTests
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testAddLike() {
-        likeStorage.addFilmLike(1L,1L);
-        var likes=likeStorage.getAllLikes(1L);
-        assertEquals(1, likes.size(), "Неверное количество лайков");
-    }
-    @Test
-    public void removeLike() {
-        likeStorage.removeFilmLike(1L,1L);
-        var likes=likeStorage.getAllLikes(1L);
-        assertEquals(0, likes.size(), "Неверное количество лайков");
-    }
-    //LikeGenres
-    @Test
-    public void testAddGenre() {
-        var genres=genreStorage.getAllGenres();
-        assertEquals(6, genres.size(), "Неверное количество жанров");
-    }
-    @Test
-    public void addGenre() {
-        genreStorage.addFilmGenre(1L,1L);
-        genreStorage.addFilmGenre(1L,2L);
-        var genres=genreStorage.getFilmGenres(1L);
-        assertEquals(2, genres.size(), "Неверное количество жанров");
+        likeStorage.addFilmLike(1L, 1L);
+        var likes = likeStorage.getAllLikes(1L);
+        assertEquals(4, likes.size(), "Неверное количество лайков");
     }
 
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
+    public void removeLike() {
+        likeStorage.removeFilmLike(1L, 1L);
+        var likes = likeStorage.getAllLikes(1L);
+        assertEquals(2, likes.size(), "Неверное количество лайков");
+    }
+
+    //LikeGenres
+    @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
+    public void testAddGenre() {
+        var genres = genreStorage.getAllGenres();
+        assertEquals(6, genres.size(), "Неверное количество жанров");
+    }
+
+    @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
+    public void addGenre() {
+        genreStorage.addFilmGenre(1L, 1L);
+        genreStorage.addFilmGenre(1L, 2L);
+        var genres = genreStorage.getFilmGenres(1L);
+        assertEquals(4, genres.size(), "Неверное количество жанров");
+    }
+
+    @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void removeGenre() {
-        Film f  = Film.builder()
-                .name("name3")
-                .description("description3")
-                .releaseDate(LocalDate.now())
-                .duration(1000L)
-                .mpa(Mpa.builder().id(1).build())
-                .build();
-        filmStorage.create(f);
-        genreStorage.addFilmGenre(2L,1L);
+        genreStorage.addFilmGenre(2L, 1L);
         genreStorage.removeFilmAllGenre(2L);
-        var genres=genreStorage.getFilmGenres(2L);
+        var genres = genreStorage.getFilmGenres(2L);
         assertEquals(0, genres.size(), "Неверное количество жанров");
     }
 
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void createReview() {
-        var review=reviewStorage.get(1L);
+        var review = reviewStorage.get(1L);
         assertEquals(5, review.get().getUseful(), "Неверная полезность");
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void updateReview() {
-        var review=reviewStorage.get(3L);
-        Review r1=review.get();
+        var review = reviewStorage.get(1L);
+        Review r1 = review.get();
         r1.setUseful(100);
-        var new_review =reviewStorage.update(r1);
-        assertEquals(100, review.get().getUseful(), "Неверная полезность");
+        var new_review = reviewStorage.update(r1);
+        assertEquals(100, new_review.getUseful(), "Неверная полезность");
     }
+
     @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void deleteReview() {
-        reviewStorage.delete(2L);
-        var reviews =reviewStorage.findAllReviewsByFilmId(1L,10);
-        assertEquals(2, reviews.size(), "Неверное количетво ревью");
+        reviewStorage.delete(1L);
+        var reviews = reviewStorage.findAllReviewsByFilmId(1L, 10);
+        assertEquals(0, reviews.size(), "Неверное количетво ревью");
+    }
+
+    @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
+    public void testFindTopNFilmsByGenreAndYear() {
+        int count = 2;
+        int genreId = 1;
+        int year = 2001;
+        Genre genre = new Genre(1, "Комедия");
+
+        List<Film> films = filmService.findTopFilmsByGenreAndYear(count, genreId, year);
+
+        assertEquals(count, films.size());
+        for (Film film : films) {
+            assertTrue(film.getGenres().contains(genre));
+
+            int actualYear = film.getReleaseDate().getYear();
+            assertEquals(year, actualYear);
+        }
+    }
+
+    @Test
+    @Sql({"/schema.sql","/data.sql", "/test-data.sql"})
+    public void testFindTopNFilmsByGenre() {
+        int count = 2;
+        int genreId = 1;
+        int year = 0;
+        Genre genre = new Genre(1, "Комедия");
+
+        List<Film> films = filmService.findTopFilmsByGenreAndYear(count, genreId, year);
+
+        assertEquals(count, films.size());
+        for (Film film : films) {
+            assertTrue(film.getGenres().contains(genre));
+        }
+    }
+
+    @Test
+    @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
+    public void testFindTopNFilmsByYear() {
+        int count = 2;
+        int genreId = 0;
+        int year = 2001;
+
+        List<Film> films = filmService.findTopFilmsByGenreAndYear(count, genreId, year);
+
+        assertEquals(count, films.size());
+        for (Film film : films) {
+            int actualYear = film.getReleaseDate().getYear();
+            assertEquals(year, actualYear);
+        }
     }
 }
