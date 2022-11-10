@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ResourceAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.validator.Validator;
 import ru.yandex.practicum.filmorate.storage.event.EventType;
 import ru.yandex.practicum.filmorate.storage.event.FeedStorage;
@@ -57,7 +56,7 @@ public class FilmService {
         if (!film.getGenres().isEmpty()) {
             genreDbStorage.removeFilmAllGenre(film.getId());
             film.getGenres()
-                    .forEach((Genre idGenre) -> genreDbStorage.addFilmGenre(film.getId(), idGenre.getId()));
+                    .forEach(genre -> genreDbStorage.addFilmGenre(film.getId(), genre.getId()));
         }
         log.info("Film created" + film);
         return createdFilm;
@@ -84,8 +83,8 @@ public class FilmService {
 
     public List<Film> findAll() {
         List<Film> allFilms = filmStorage.findAll();
-        addGenresToFilm(allFilms);
-        addLikesToFilm(allFilms);
+        addGenresToFilms(allFilms);
+        addLikesToFilms(allFilms);
         return allFilms;
     }
 
@@ -113,8 +112,8 @@ public class FilmService {
 
     public List<Film> getPopularFilms(int count) {
         List<Film> popularFilms = filmStorage.findTop10Films(count);
-        addGenresToFilm(popularFilms);
-        addLikesToFilm(popularFilms);
+        addGenresToFilms(popularFilms);
+        addLikesToFilms(popularFilms);
         return popularFilms;
     }
 
@@ -123,8 +122,8 @@ public class FilmService {
             throw new ResourceNotFoundException("Film with id=" + id + " not found");
         }
         Film f = filmStorage.getFilm(id);
-        addGenreToFilm(f);
-        addLikeToFilm(f);
+        getGenresForFilm(f);
+        getLikesForFilm(f);
         return f;
     }
 
@@ -134,8 +133,8 @@ public class FilmService {
             return getPopularFilms(count);
         }
         List<Film> topNFilms = filmStorage.findTopFilmsByGenreAndYear(count, genreId, year);
-        addGenresToFilm(topNFilms);
-        addLikesToFilm(topNFilms);
+        addGenresToFilms(topNFilms);
+        addLikesToFilms(topNFilms);
         return topNFilms;
     }
 
@@ -145,7 +144,7 @@ public class FilmService {
 
     public List<Film> getFilmsByDirector(Long directorId, String sortBy) {
         List<Film> films = filmStorage.getByDirector(directorId, sortBy);
-        addGenresToFilm(films);
+        addGenresToFilms(films);
         if (films.size() == 0) {
             throw new ResourceNotFoundException(String.format("Films not found for director: %s", directorId));
         }
@@ -165,7 +164,7 @@ public class FilmService {
     public List<Film> getByName(String query, List<String> by) {
         if (query == null || query.isEmpty() || by == null || by.isEmpty()) {
             List<Film> films = filmStorage.getByTitleSubstring("");
-            addGenresToFilm(films);
+            addGenresToFilms(films);
             return films;
         }
         query = query.trim().toLowerCase();
@@ -174,34 +173,34 @@ public class FilmService {
             String byStr = by.get(0);
             if (byStr.equals("director")) {
                 List<Film> films = filmStorage.getByDirectorSubstring(query);
-                addGenresToFilm(films);
+                addGenresToFilms(films);
                 return films;
             } else if (byStr.equals("title")) {
                 List<Film> films = filmStorage.getByTitleSubstring(query);
-                addGenresToFilm(films);
+                addGenresToFilms(films);
                 return films;
             }
         } else if (by.size() == 2 && by.containsAll(Arrays.asList("director", "title"))) {
             List<Film> films = filmStorage.getByDirectorOrTitleSubstring(query);
-            addGenresToFilm(films);
+            addGenresToFilms(films);
             return films;
         }
         throw new IllegalArgumentException("by should contain values 'director' or 'title'");
     }
 
-    private void addGenreToFilm(Film film) {
+    private void getGenresForFilm(Film film) {
         genreDbStorage.getFilmGenres(film.getId()).forEach(film::addGenre);
     }
 
-    private void addGenresToFilm(List<Film> films) {
-        films.forEach(this::addGenreToFilm);
+    private void addGenresToFilms(List<Film> films) {
+        films.forEach(this::getGenresForFilm);
     }
 
-    private void addLikeToFilm(Film film) {
+    private void getLikesForFilm(Film film) {
         likeDbStorage.getAllLikes(film.getId()).forEach(film::addLike);
     }
 
-    private void addLikesToFilm(List<Film> films) {
-        films.forEach(this::addLikeToFilm);
+    private void addLikesToFilms(List<Film> films) {
+        films.forEach(this::getLikesForFilm);
     }
 }
