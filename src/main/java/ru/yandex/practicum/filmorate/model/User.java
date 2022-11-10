@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,9 +17,10 @@ import java.util.Set;
 public class User {
     private long id;
     @Email
+    @NotEmpty
     private String email;
-    @NotBlank
-    @Pattern(regexp = "\\S+")
+    @NotBlank(message = "Login is empty or contains spaces")
+    @Pattern(regexp = "\\S+", message = "Login is empty or contains spaces")
     private String login;
     private String name;
     @PastOrPresent
