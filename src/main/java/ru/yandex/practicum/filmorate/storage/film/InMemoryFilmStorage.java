@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
 import ru.yandex.practicum.filmorate.model.Film;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,7 +67,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public List<Film> getByDirector(Long directorId, String sortBy) {
-        throw new InternalServerException("Method not allowed");
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "method not implemented");
     }
 
     @Override
