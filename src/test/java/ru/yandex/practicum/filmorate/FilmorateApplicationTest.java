@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -52,6 +55,7 @@ class FilmorateApplicationTest {
         setMpaStorage(mpaStorage);
         setGenreStorage(genreStorage);
         setReviewStorage(reviewStorage);
+
         User u = User.builder()
                 .email("email")
                 .login("login")
@@ -110,6 +114,12 @@ class FilmorateApplicationTest {
         reviewStorage.create(r2);
 
 
+    }
+
+    @AfterAll
+    @Sql({"/schema.sql", "/data.sql"})
+    public static void clear() {
+        System.out.println("database cleared");
     }
 
     public static void setUserStorage(UserDbStorage userStorage) {
@@ -327,8 +337,4 @@ class FilmorateApplicationTest {
         var reviews =reviewStorage.findAllReviewsByFilmId(1L,10);
         assertEquals(2, reviews.size(), "Неверное количетво ревью");
     }
-
-
-
-
 }

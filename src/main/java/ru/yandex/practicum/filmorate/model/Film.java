@@ -15,12 +15,12 @@ import java.util.*;
 @Builder
 public class Film {
     private long id;
-    @NotEmpty
+    @NotEmpty(message = "must not be empty")
     private String name;
     @NotEmpty
     private String description;
     private LocalDate releaseDate;
-    @Positive
+    @Positive(message = "must be greater than 0")
     private Long duration;
     @Positive
     private Integer rate;

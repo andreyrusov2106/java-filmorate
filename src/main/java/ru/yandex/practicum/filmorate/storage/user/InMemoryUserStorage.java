@@ -7,7 +7,8 @@ import java.util.*;
 public class InMemoryUserStorage implements UserStorage {
 
     private static long currentId;
-    private final Map<Long, User> users = new HashMap<>();
+    private static final Map<Long, User> users = new HashMap<>();
+
 
     public User create(User user) {
         currentId++;

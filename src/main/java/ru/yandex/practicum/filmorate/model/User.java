@@ -17,13 +17,13 @@ import java.util.Set;
 public class User {
     private long id;
     @Email
-    @NotEmpty
+    @NotEmpty(message = "must not be empty")
     private String email;
     @NotBlank(message = "Login is empty or contains spaces")
     @Pattern(regexp = "\\S+", message = "Login is empty or contains spaces")
     private String login;
     private String name;
-    @PastOrPresent
+    @PastOrPresent(message = "must be a date in the past or in the present")
     private LocalDate birthday;
     private final Set<Long> friends = new HashSet<>();
 

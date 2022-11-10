@@ -1,13 +1,18 @@
 package ru.yandex.practicum.filmorate.validators;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.validator.Validator;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
@@ -41,7 +46,7 @@ class ValidatorTest {
                 ValidationException.class,
                 () -> filmValidator.check(f)
         );
-        assertEquals("check.t.name: не должно быть пустым", exception.getMessage());
+        assertEquals("check.t.name: must not be empty", exception.getMessage());
     }
 
     @Test
@@ -95,7 +100,7 @@ class ValidatorTest {
                 ValidationException.class,
                 () -> filmValidator.check(f)
         );
-        assertEquals("check.t.duration: должно быть больше 0", exception.getMessage());
+        assertEquals("check.t.duration: must be greater than 0", exception.getMessage());
     }
 
     @Test
@@ -111,7 +116,7 @@ class ValidatorTest {
                 ValidationException.class,
                 () -> userValidator.check(u)
         );
-        assertEquals("check.t.email: не должно быть пустым", exception.getMessage());
+        assertEquals("check.t.email: must not be empty", exception.getMessage());
     }
 
     @Test
@@ -143,6 +148,6 @@ class ValidatorTest {
                 ValidationException.class,
                 () -> userValidator.check(u)
         );
-        assertEquals("check.t.birthday: должно содержать прошедшую дату или сегодняшнее число", exception.getMessage());
+        assertEquals("check.t.birthday: must be a date in the past or in the present", exception.getMessage());
     }
 }
