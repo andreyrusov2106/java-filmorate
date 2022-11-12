@@ -37,8 +37,7 @@ public class FilmService {
                        GenreStorage genreDbStorage,
                        LikeDbStorage likeDbStorage,
                        FeedStorage feedStorage,
-                       Validator<Film> filmValidator)
-    {
+                       Validator<Film> filmValidator) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.genreDbStorage = genreDbStorage;
@@ -47,7 +46,7 @@ public class FilmService {
         this.filmValidator = filmValidator;
     }
 
-    public Film create(Film film) {
+    public Film createFilm(Film film) {
         if (filmStorage.contains(film)) {
             throw new ResourceAlreadyExistException("FilmAlreadyExist");
         }
@@ -62,7 +61,7 @@ public class FilmService {
         return createdFilm;
     }
 
-    public Film update(Film film) {
+    public Film updateFilm(Film film) {
         filmValidator.check(film);
         Film updatedFilm;
         if (filmStorage.contains(film)) {
@@ -89,12 +88,12 @@ public class FilmService {
     }
 
     public void addLike(Long idFilm, Long idUser) {
-        CheckFilmAndUser(idFilm, idUser);
+        checkFilmAndUser(idFilm, idUser);
         likeDbStorage.addFilmLike(idFilm, idUser);
         feedStorage.createEvent(idUser, Operation.ADD, EventType.LIKE, idFilm);
     }
 
-    private void CheckFilmAndUser(Long idFilm, Long idUser) {
+    private void checkFilmAndUser(Long idFilm, Long idUser) {
         if (!filmStorage.contains(idFilm)) {
             throw new ResourceNotFoundException("Film with id=" + idFilm + " not found");
         }
@@ -105,7 +104,7 @@ public class FilmService {
     }
 
     public void removeLike(Long idFilm, Long idUser) {
-        CheckFilmAndUser(idFilm, idUser);
+        checkFilmAndUser(idFilm, idUser);
         likeDbStorage.removeFilmLike(idFilm, idUser);
         feedStorage.createEvent(idUser, Operation.REMOVE, EventType.LIKE, idFilm);
     }
@@ -122,11 +121,10 @@ public class FilmService {
             throw new ResourceNotFoundException("Film with id=" + id + " not found");
         }
         Film f = filmStorage.getFilm(id);
-        getGenresForFilm(f);
-        getLikesForFilm(f);
+        addGenresToFilm(f);
+        addLikesToFilm(f);
         return f;
     }
-
 
     public List<Film> findTopFilmsByGenreAndYear(int count, int genreId, int year) {
         if (genreId == 0 && year == 0) {
@@ -152,12 +150,8 @@ public class FilmService {
     }
 
     public void removeFilm(Long id) {
-        if (!filmStorage.contains(id)) {
-            throw new ResourceNotFoundException("Film not found");
-        }
-
         if (!filmStorage.removeFilm(id)) {
-            throw new RuntimeException("Unexpected error has occurred");
+            throw new ResourceNotFoundException("Film not found");
         }
     }
 
@@ -188,19 +182,19 @@ public class FilmService {
         throw new IllegalArgumentException("by should contain values 'director' or 'title'");
     }
 
-    private void getGenresForFilm(Film film) {
+    private void addGenresToFilm(Film film) {
         genreDbStorage.getFilmGenres(film.getId()).forEach(film::addGenre);
     }
 
     private void addGenresToFilms(List<Film> films) {
-        films.forEach(this::getGenresForFilm);
+        films.forEach(this::addGenresToFilm);
     }
 
-    private void getLikesForFilm(Film film) {
+    private void addLikesToFilm(Film film) {
         likeDbStorage.getAllLikes(film.getId()).forEach(film::addLike);
     }
 
     private void addLikesToFilms(List<Film> films) {
-        films.forEach(this::getLikesForFilm);
+        films.forEach(this::addLikesToFilm);
     }
 }

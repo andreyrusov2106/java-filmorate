@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @Service
 public class ReviewService {
@@ -42,7 +41,7 @@ public class ReviewService {
         this.reviewValidator = reviewValidator;
     }
 
-    public Review create(Review review) {
+    public Review createReview(Review review) {
         reviewValidator.check(review);
         if (!userStorage.contains(review.getUserId())) {
             throw new ResourceNotFoundException("User not found");
@@ -56,7 +55,7 @@ public class ReviewService {
         return createdReview;
     }
 
-    public Review update(Review review) {
+    public Review updateReview(Review review) {
         reviewValidator.check(review);
         if (!userStorage.contains(review.getUserId())) {
             throw new ResourceNotFoundException("User not found");
@@ -65,15 +64,15 @@ public class ReviewService {
             throw new ResourceNotFoundException("Film not found");
         }
         reviewDbStorage.update(review);
-        Review updatedReview = reviewDbStorage.get(review.getReviewId()).
+        Review updatedReview = reviewDbStorage.getReviewById(review.getReviewId()).
                 orElseThrow(() -> new ResourceNotFoundException("review not found"));
         feedStorage.createEvent(updatedReview.getUserId(), Operation.UPDATE, EventType.REVIEW, updatedReview.getReviewId());
         log.info("Review updated" + review);
         return updatedReview;
     }
 
-    public Review get(long id) {
-        Optional<Review> review = reviewDbStorage.get(id);
+    public Review getReview(long id) {
+        Optional<Review> review = reviewDbStorage.getReviewById(id);
         if (review.isPresent()) {
             return review.get();
         } else {
@@ -81,15 +80,15 @@ public class ReviewService {
         }
     }
 
-    public void delete(long id) {
-        Review review = reviewDbStorage.get(id)
+    public void deleteReview(long id) {
+        Review review = reviewDbStorage.getReviewById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("review with id %s not found", id)));
         reviewDbStorage.delete(id);
         feedStorage.createEvent(review.getUserId(), Operation.REMOVE, EventType.REVIEW, id);
         log.info("Review deleted" + id);
     }
 
-    public List<Review> getAllReviews(long filmId, long count) {
+    public List<Review> getReviews(long filmId, long count) {
         List<Review> reviews = reviewDbStorage.findAllReviewsByFilmId(filmId, count);
         log.info(String.format("Top %d reviews is %s", count, reviews));
         return reviews.stream().sorted(Comparator.comparingLong(Review::getUseful).reversed()).collect(Collectors.toList());
@@ -106,7 +105,7 @@ public class ReviewService {
         }
     }
 
-    public void addDisLike(long id, long userId) {
+    public void addDislike(long id, long userId) {
         if (!reviewDbStorage.contains(id, userId, false)) {
             if (!reviewDbStorage.contains(id, userId, true)) {
                 reviewDbStorage.updateUseful(id, -1);
@@ -114,7 +113,6 @@ public class ReviewService {
                 reviewDbStorage.updateUseful(id, -2);
             }
             reviewDbStorage.addReviewLike(id, userId, false);
-
         }
     }
 
@@ -125,7 +123,7 @@ public class ReviewService {
         }
     }
 
-    public void removeDisLike(long id, long userId) {
+    public void removeDislike(long id, long userId) {
         if (reviewDbStorage.contains(id, userId, false)) {
             reviewDbStorage.removeReviewLike(id, userId, false);
             reviewDbStorage.updateUseful(id, 1);

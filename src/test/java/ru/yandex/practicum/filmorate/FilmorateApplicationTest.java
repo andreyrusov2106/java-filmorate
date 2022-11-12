@@ -20,6 +20,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -245,14 +246,16 @@ class FilmorateApplicationTest {
     @Test
     @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void createReview() {
-        var review = reviewStorage.get(1L);
+        Optional<Review> review = reviewStorage.getReviewById(1L);
+        assertTrue(review.isPresent());
         assertEquals(5, review.get().getUseful(), "Неверная полезность");
     }
 
     @Test
     @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void updateReview() {
-        var review = reviewStorage.get(1L);
+        Optional<Review> review = reviewStorage.getReviewById(1L);
+        assertTrue(review.isPresent());
         Review r1 = review.get();
         r1.setUseful(100);
         var new_review = reviewStorage.update(r1);
