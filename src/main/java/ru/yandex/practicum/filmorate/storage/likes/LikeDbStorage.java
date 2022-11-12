@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.likes;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +18,9 @@ public class LikeDbStorage implements LikeStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final static String INSERT_FILM_LIKE_SQL = "INSERT INTO PUBLIC.FILM_LIKE (FILM_ID, USER_ID) VALUES(?,?)";
-    private final static String DELETE_FILM_LIKE_SQL = "DELETE FROM PUBLIC.FILM_LIKE  WHERE FILM_ID=? AND USER_ID=? ";
-    private final static String SELECT_FILM_LIKE_SQL = "SELECT USER_ID FROM PUBLIC.FILM_LIKE  WHERE FILM_ID=? ";
+    private final static String INSERT_FILM_LIKE_SQL = "INSERT INTO FILM_LIKE (FILM_ID, USER_ID) VALUES(?, ?)";
+    private final static String DELETE_FILM_LIKE_SQL = "DELETE FROM FILM_LIKE WHERE FILM_ID = ? AND USER_ID = ?";
+    private final static String SELECT_FILM_LIKE_SQL = "SELECT USER_ID FROM FILM_LIKE WHERE FILM_ID = ?";
 
     @Override
     public void addFilmLike(Long idFilm, Long idUser) {

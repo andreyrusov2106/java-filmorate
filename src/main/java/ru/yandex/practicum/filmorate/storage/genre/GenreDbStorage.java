@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.genre;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -6,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Genre;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,14 +23,14 @@ public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final static String SELECT_GENRE_BY_ID_SQL = "SELECT * FROM PUBLIC.GENRE WHERE GENRE_ID=?";
-    private final static String SELECT_ALL_GENRES_SQL = "SELECT * FROM PUBLIC.GENRE";
-    private final static String INSERT_FILM_GENRE_SQL = "INSERT INTO PUBLIC.FILM_GENRE (FILM_ID, GENRE_ID) VALUES(?,?)";
-    private final static String DELETE_FILM_GENRE_SQL = "DELETE FROM PUBLIC.FILM_GENRE WHERE FILM_ID=?";
+    private final static String SELECT_GENRE_BY_ID_SQL = "SELECT * FROM GENRE WHERE GENRE_ID = ?";
+    private final static String SELECT_ALL_GENRES_SQL = "SELECT * FROM GENRE";
+    private final static String INSERT_FILM_GENRE_SQL = "INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID) VALUES(?, ?)";
+    private final static String DELETE_FILM_GENRE_SQL = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
     private final static String SELECT_FILM_GENRE_SQL =
             "SELECT G.GENRE_ID AS GENRE_ID, G.NAME AS NAME  " +
-                    "FROM PUBLIC.FILM_GENRE FG LEFT JOIN PUBLIC.GENRE G ON FG.GENRE_ID = G.GENRE_ID " +
-                    "WHERE FG.FILM_ID=? ORDER BY GENRE_ID";
+                    "FROM FILM_GENRE FG LEFT JOIN GENRE G ON FG.GENRE_ID = G.GENRE_ID " +
+                    "WHERE FG.FILM_ID = ? ORDER BY GENRE_ID";
 
     @Override
     public List<Genre> getAllGenres() {

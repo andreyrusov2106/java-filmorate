@@ -1,12 +1,15 @@
 package ru.yandex.practicum.filmorate.storage.director;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Director;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -23,10 +26,10 @@ public class DirectorDbStorage implements DirectorStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final static String SELECT_BY_ID = "SELECT director_id, name FROM directors WHERE director_id=?";
+    private final static String SELECT_BY_ID = "SELECT director_id, name FROM directors WHERE director_id = ?";
     private final static String SELECT_ALL = "SELECT director_id, name FROM directors";
-    private final static String UPDATE = "UPDATE directors SET name=? WHERE director_id=?";
-    private final static String DELETE = "DELETE FROM directors WHERE director_id=?";
+    private final static String UPDATE = "UPDATE directors SET name = ? WHERE director_id = ?";
+    private final static String DELETE = "DELETE FROM directors WHERE director_id = ?";
 
     @Override
     public Optional<Director> findById(Long directorId) {

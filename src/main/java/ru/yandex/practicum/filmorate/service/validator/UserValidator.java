@@ -11,7 +11,7 @@ import javax.validation.Valid;
 public class UserValidator implements  Validator<User> {
     @Override
     public void check(@Valid User user) {
-        if (user.getName()==null || user.getName().isEmpty()) {
+        if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
     }

@@ -15,7 +15,6 @@ import java.time.Month;
 public class FilmValidator implements Validator<Film> {
     @Override
     public void check(@Valid Film film) {
-
         if (film.getDescription().length() > 200) {
             throw new ValidationException("Description is longer than 200");
         }

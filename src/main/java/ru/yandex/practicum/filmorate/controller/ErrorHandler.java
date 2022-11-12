@@ -47,8 +47,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
         log.warn(e.getMessage());
-        return new ErrorResponse(
-                "An unexpected error has occurred."
-        );
+        return new ErrorResponse("An unexpected error has occurred.");
     }
 }

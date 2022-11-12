@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.friends;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,17 +21,17 @@ public class FriendDbStorage implements FriendsStorage {
     private final JdbcTemplate jdbcTemplate;
 
     private final static String DELETE_FRIEND_BY_ID_SQL =
-            "DELETE FROM PUBLIC.FRIENDSHIP " +
-                    "WHERE USER_ID=? AND FRIEND_ID=?";
+            "DELETE FROM FRIENDSHIP " +
+                    "WHERE USER_ID = ? AND FRIEND_ID = ?";
     private final static String SELECT_ALL_FRIEND_BY_ID_SQL =
-            "SELECT U.* FROM PUBLIC.FRIENDSHIP F " +
-                    "LEFT JOIN PUBLIC.USERS U ON U.USER_ID=F.FRIEND_ID " +
-                    "WHERE F.USER_ID=?";
+            "SELECT U.* FROM FRIENDSHIP F " +
+                    "LEFT JOIN USERS U ON U.USER_ID = F.FRIEND_ID " +
+                    "WHERE F.USER_ID = ?";
     private final static String SELECT_COMMON_FRIEND_SQL =
             "SELECT U.* FROM FRIENDSHIP F " +
-                    "LEFT JOIN PUBLIC.USERS U ON U.USER_ID=F.FRIEND_ID " +
-                    "WHERE F.USER_ID=? AND " +
-                    "F.FRIEND_ID IN(SELECT F2.FRIEND_ID FROM FRIENDSHIP F2 WHERE F2.USER_ID=?)";
+                    "LEFT JOIN USERS U ON U.USER_ID = F.FRIEND_ID " +
+                    "WHERE F.USER_ID = ? AND " +
+                    "F.FRIEND_ID IN(SELECT F2.FRIEND_ID FROM FRIENDSHIP F2 WHERE F2.USER_ID = ?)";
 
     @Override
     public void addFriend(Long idUser, Long idFriend) {
