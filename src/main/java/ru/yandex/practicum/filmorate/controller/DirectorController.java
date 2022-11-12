@@ -29,7 +29,7 @@ public class DirectorController {
     @GetMapping("{id}")
     public Director getDirector(@PathVariable Long id) {
         log.info(String.format("getDirector for id: %s", id));
-        return service.getById(id);
+        return service.getDirectorById(id);
     }
 
     @PostMapping
@@ -45,7 +45,7 @@ public class DirectorController {
     }
 
     @DeleteMapping("{id}")
-    public void delDirector(@PathVariable Long id) {
+    public void removeDirector(@PathVariable Long id) {
         log.info(String.format("delDirector for id: %s", id));
         service.deleteDirector(id);
     }

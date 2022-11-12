@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.mpa;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -6,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Mpa;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,8 +22,8 @@ public class MpaDbStorage implements MpaStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final static String SELECT_ALL_GENRES_SQL = "SELECT * FROM PUBLIC.RATING";
-    private final static String SELECT_GENRE_BY_ID_SQL = "SELECT * FROM PUBLIC.RATING WHERE RATING_ID=?";
+    private final static String SELECT_ALL_GENRES_SQL = "SELECT * FROM RATING";
+    private final static String SELECT_GENRE_BY_ID_SQL = "SELECT * FROM RATING WHERE RATING_ID = ?";
 
     @Override
     public List<Mpa> getAllMpa() {

@@ -32,14 +32,14 @@ public class UserService {
         this.userValidator = userValidator;
     }
 
-    public User create(User user) {
+    public User createUser(User user) {
         userValidator.check(user);
         User createdUser = userStorage.create(user);
         log.info("User created" + createdUser);
         return createdUser;
     }
 
-    public User update(User user) {
+    public User updateUser(User user) {
         userValidator.check(user);
         User updatedUser;
         if (userStorage.contains(user)) {
@@ -100,12 +100,8 @@ public class UserService {
     }
 
     public void removeUser(Long id) {
-        if (!userStorage.contains(id)) {
-            throw new ResourceNotFoundException("User not found");
-        }
-
         if (!userStorage.removeUser(id)) {
-            throw new RuntimeException("Unexpected error has occurred");
+            throw new ResourceNotFoundException("User not found");
         }
     }
 }

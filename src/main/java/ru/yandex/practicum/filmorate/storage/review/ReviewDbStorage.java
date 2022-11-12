@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.review;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,25 +25,27 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private final static String UPDATE_REVIEW_SQL =
             "UPDATE PUBLIC.REVIEW " +
-                    "SET CONTENT=?, IS_POSITIVE=? " +
-                    "WHERE REVIEW_ID=?";
+                    "SET CONTENT = ?, IS_POSITIVE = ? " +
+                    "WHERE REVIEW_ID = ?";
     private final static String UPDATE_REVIEW_USEFUL_SQL =
             "UPDATE PUBLIC.REVIEW " +
-                    "SET USEFUL=USEFUL+? " +
-                    "WHERE REVIEW_ID=?";
-    private final static String DELETE_REVIEW_SQL = "DELETE FROM PUBLIC.REVIEW WHERE REVIEW_ID=?";
-    private final static String SELECT_REVIEW_BY_ID_SQL = "SELECT * FROM PUBLIC.REVIEW WHERE REVIEW_ID=?";
+                    "SET USEFUL = USEFUL + ? " +
+                    "WHERE REVIEW_ID = ?";
+    private final static String DELETE_REVIEW_SQL =
+            "DELETE FROM REVIEW WHERE REVIEW_ID = ?";
+    private final static String SELECT_REVIEW_BY_ID_SQL =
+            "SELECT * FROM REVIEW WHERE REVIEW_ID = ?";
 
     private final static String SELECT_TOP_REVIEWS_BY_FILM_ID =
-            "SELECT * FROM PUBLIC.REVIEW WHERE FILM_ID=? ORDER BY USEFUL DESC LIMIT ?";
+            "SELECT * FROM REVIEW WHERE FILM_ID = ? ORDER BY USEFUL DESC LIMIT ?";
     private final static String SELECT_TOP_REVIEWS =
-            "SELECT * FROM PUBLIC.REVIEW ORDER BY USEFUL LIMIT ?";
+            "SELECT * FROM REVIEW ORDER BY USEFUL LIMIT ?";
     private final static String INSERT_REVIEW_LIKE_SQL =
-            "MERGE INTO PUBLIC.REVIEW_LIKE (REVIEW_ID, USER_ID, IS_LIKE) VALUES(?,?,?)";
+            "MERGE INTO REVIEW_LIKE (REVIEW_ID, USER_ID, IS_LIKE) VALUES(?, ?, ?)";
     private final static String DELETE_REVIEW_LIKE_SQL =
-            "DELETE FROM PUBLIC.REVIEW_LIKE WHERE REVIEW_ID=? AND USER_ID=? AND IS_LIKE=?";
+            "DELETE FROM REVIEW_LIKE WHERE REVIEW_ID = ? AND USER_ID = ? AND IS_LIKE = ?";
     private final static String SELECT_REVIEW_LIKE_SQL =
-            "SELECT * FROM PUBLIC.REVIEW_LIKE WHERE REVIEW_ID=? AND USER_ID=? AND IS_LIKE=?";
+            "SELECT * FROM REVIEW_LIKE WHERE REVIEW_ID = ? AND USER_ID = ? AND IS_LIKE = ?";
 
     @Override
     public Review create(Review review) {
@@ -82,7 +86,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Optional<Review> get(long id) {
+    public Optional<Review> getReviewById(long id) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_REVIEW_BY_ID_SQL, this::mapRowToReview, id));
         } catch (EmptyResultDataAccessException e) {
