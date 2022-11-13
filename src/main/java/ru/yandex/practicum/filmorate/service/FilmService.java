@@ -117,9 +117,6 @@ public class FilmService {
     }
 
     public Film getFilm(Long id) {
-        if (!filmStorage.contains(id)) {
-            throw new ResourceNotFoundException("Film with id=" + id + " not found");
-        }
         Film f = filmStorage.getFilm(id);
         addGenresToFilm(f);
         addLikesToFilm(f);
