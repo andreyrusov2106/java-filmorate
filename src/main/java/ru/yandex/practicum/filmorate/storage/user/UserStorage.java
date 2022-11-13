@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
+@Repository
 public interface UserStorage {
+
     User create(User user);
 
     User update(User user);
@@ -17,4 +20,5 @@ public interface UserStorage {
 
     Boolean contains(Long id);
 
+    boolean removeUser(Long id);
 }

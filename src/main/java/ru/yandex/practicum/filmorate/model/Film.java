@@ -3,9 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -13,22 +14,21 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 public class Film {
-    @NotNull
     private long id;
-    @NotNull
+    @NotEmpty(message = "must not be empty")
     private String name;
-    @NotNull
+    @NotEmpty
     private String description;
-    @NotNull
     private LocalDate releaseDate;
-    @NotNull
+    @Positive(message = "must be greater than 0")
     private Long duration;
-    @NotNull
+    @Positive
     private Integer rate;
     private final Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
     private final Set<Long> likes = new TreeSet<>();
     @NotNull
     private Mpa mpa;
+    private List<Director> directors;
 
     public Map<String, Object> toMap() {
         Map<String, Object> values = new HashMap<>();
@@ -52,4 +52,7 @@ public class Film {
         likes.remove(idUser);
     }
 
+    public void setDirectors(List<Director> list) {
+        this.directors = list;
+    }
 }

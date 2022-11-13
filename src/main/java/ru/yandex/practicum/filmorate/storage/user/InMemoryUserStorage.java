@@ -5,11 +5,12 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 
-
 @Component
 public class InMemoryUserStorage implements UserStorage {
+
     private static long currentId;
-    private final Map<Long, User> users = new HashMap<>();
+    private static final Map<Long, User> users = new HashMap<>();
+
 
     public User create(User user) {
         currentId++;
@@ -42,5 +43,8 @@ public class InMemoryUserStorage implements UserStorage {
         return users.get(id);
     }
 
-
+    @Override
+    public boolean removeUser(Long id) {
+        return users.remove(id) != null;
+    }
 }

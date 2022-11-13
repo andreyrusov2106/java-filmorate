@@ -1,36 +1,37 @@
 package ru.yandex.practicum.filmorate.storage.friends;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Slf4j
 @Component()
 @Qualifier("FriendDbStorage")
+@RequiredArgsConstructor
 public class FriendDbStorage implements FriendsStorage {
-    private final JdbcTemplate jdbcTemplate;
-    private final String DELETE_FRIEND_BY_ID_SQL =
-            "DELETE FROM PUBLIC.FRIENDSHIP " +
-                    "WHERE USER_ID=? AND FRIEND_ID=?";
-    private final String SELECT_ALL_FRIEND_BY_ID_SQL =
-            "SELECT U.* FROM PUBLIC.FRIENDSHIP F " +
-                    "LEFT JOIN PUBLIC.USERS U ON U.USER_ID=F.FRIEND_ID " +
-                    "WHERE F.USER_ID=?";
-    private final String SELECT_COMMON_FRIEND_SQL =
-            "SELECT U.* FROM FRIENDSHIP F " +
-                    "LEFT JOIN PUBLIC.USERS U ON U.USER_ID=F.FRIEND_ID " +
-                    "WHERE F.USER_ID=? AND " +
-                    "F.FRIEND_ID IN(SELECT F2.FRIEND_ID FROM FRIENDSHIP F2 WHERE F2.USER_ID=?)";
 
-    public FriendDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
+
+    private final static String DELETE_FRIEND_BY_ID_SQL =
+            "DELETE FROM FRIENDSHIP " +
+                    "WHERE USER_ID = ? AND FRIEND_ID = ?";
+    private final static String SELECT_ALL_FRIEND_BY_ID_SQL =
+            "SELECT U.* FROM FRIENDSHIP F " +
+                    "LEFT JOIN USERS U ON U.USER_ID = F.FRIEND_ID " +
+                    "WHERE F.USER_ID = ?";
+    private final static String SELECT_COMMON_FRIEND_SQL =
+            "SELECT U.* FROM FRIENDSHIP F " +
+                    "LEFT JOIN USERS U ON U.USER_ID = F.FRIEND_ID " +
+                    "WHERE F.USER_ID = ? AND " +
+                    "F.FRIEND_ID IN(SELECT F2.FRIEND_ID FROM FRIENDSHIP F2 WHERE F2.USER_ID = ?)";
 
     @Override
     public void addFriend(Long idUser, Long idFriend) {
@@ -65,5 +66,4 @@ public class FriendDbStorage implements FriendsStorage {
                 .birthday(resultSet.getDate("birthday").toLocalDate())
                 .build();
     }
-
 }
