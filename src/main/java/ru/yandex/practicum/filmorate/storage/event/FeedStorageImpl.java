@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.event;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,9 +13,9 @@ import java.util.List;
 public class FeedStorageImpl implements FeedStorage {
 
     private static final String CREATE_EVENT =
-            "insert into EVENTS (USER_ID, OPERATION, EVENT_TYPE, ENTITY_ID) values (?,?,?,?)";
+            "INSERT INTO EVENTS (USER_ID, OPERATION, EVENT_TYPE, ENTITY_ID) VALUES (?, ?, ?, ?)";
     private static final String FEED_BY_USER_ID =
-            "select * from EVENTS where USER_ID = ?";
+            "SELECT * FROM EVENTS WHERE USER_ID = ?";
 
     private final JdbcTemplate jdbcTemplate;
 

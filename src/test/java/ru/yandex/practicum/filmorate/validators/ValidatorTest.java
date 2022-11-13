@@ -1,15 +1,31 @@
 package ru.yandex.practicum.filmorate.validators;
 
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.validator.Validator;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
+import javax.validation.ValidationException;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ValidatorTest {
+    private final Validator<Film> filmValidator;
+    private final Validator<User> userValidator;
+
     private static final String LENGTH_201 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
@@ -24,12 +40,13 @@ class ValidatorTest {
                 .description("description")
                 .releaseDate(LocalDate.now())
                 .duration(1000L)
+                .mpa(new Mpa(1,"G"))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> filmValidator.check(f)
         );
-        assertEquals("Film name is empty", exception.getMessage());
+        assertEquals("check.t.name: must not be empty", exception.getMessage());
     }
 
     @Test
@@ -41,10 +58,11 @@ class ValidatorTest {
                 .description(LENGTH_201)
                 .releaseDate(LocalDate.now())
                 .duration(1000L)
+                .mpa(new Mpa(1,"G"))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> filmValidator.check(f)
         );
         assertEquals("Description is longer than 200", exception.getMessage());
     }
@@ -58,10 +76,11 @@ class ValidatorTest {
                 .description("description")
                 .releaseDate(LocalDate.now().minusYears(200))
                 .duration(1000L)
+                .mpa(new Mpa(1,"G"))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> filmValidator.check(f)
         );
         assertEquals("Release date is before 28 december 1895", exception.getMessage());
     }
@@ -75,12 +94,13 @@ class ValidatorTest {
                 .description("description")
                 .releaseDate(LocalDate.now())
                 .duration(-1000L)
+                .mpa(new Mpa(1,"G"))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateFilm(f)
+                () -> filmValidator.check(f)
         );
-        assertEquals("Duration is negative", exception.getMessage());
+        assertEquals("check.t.duration: must be greater than 0", exception.getMessage());
     }
 
     @Test
@@ -94,40 +114,40 @@ class ValidatorTest {
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateUser(u)
+                () -> userValidator.check(u)
         );
-        assertEquals("Invalid email", exception.getMessage());
+        assertEquals("check.t.email: must not be empty", exception.getMessage());
     }
 
     @Test
     void validateUserWithEmptyLogin() {
         User u = User.builder()
                 .id(1L)
-                .email("email")
+                .email("email@mail.ru")
                 .login("")
                 .name("name")
                 .birthday(LocalDate.now().minusYears(20))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateUser(u)
+                () -> userValidator.check(u)
         );
-        assertEquals("Login is empty or contains spaces", exception.getMessage());
+        assertEquals("check.t.login: Login is empty or contains spaces, check.t.login: Login is empty or contains spaces", exception.getMessage());
     }
 
     @Test
     void validateUserWithBirthdayAfterNow() {
         User u = User.builder()
                 .id(1L)
-                .email("email")
+                .email("email@mail.ru")
                 .login("login")
                 .name("name")
                 .birthday(LocalDate.now().plusYears(20))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> Validator.validateUser(u)
+                () -> userValidator.check(u)
         );
-        assertEquals("Birthday is after now", exception.getMessage());
+        assertEquals("check.t.birthday: must be a date in the past or in the present", exception.getMessage());
     }
 }

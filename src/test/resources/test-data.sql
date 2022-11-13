@@ -17,3 +17,8 @@ insert into FILM_LIKE (FILM_ID, USER_ID)
 values (1, 1), (1, 2), (1, 3),
        (2, 1), (2, 2),
        (3, 3);
+
+insert into FRIENDSHIP (USER_ID, FRIEND_ID) values (1, 2), (1, 3), (3, 2);
+
+insert into REVIEW (CONTENT, IS_POSITIVE, USER_ID, FILM_ID, USEFUL)
+values ('This film is soo bad.', true, 1, 1, 5);
