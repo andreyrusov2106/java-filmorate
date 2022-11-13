@@ -35,15 +35,13 @@ public class DirectorFilmDbStorage implements DirectorFilmStorage {
     @Override
     public void refresh(Film film) {
         delete(film.getId());
-        if (film.getDirectors() != null) {
-            if (film.getDirectors().size() > 0) {
-                StringBuilder sb = new StringBuilder();
-                for (Director director : film.getDirectors()) {
-                    sb.append("(").append(director.getId()).append(",").append(film.getId()).append("),");
-                }
-                System.out.println(sb.substring(0, sb.length() - 1));
-                jdbcTemplate.update(INSERT_SQL + sb.substring(0, sb.length() - 1));
+        if (film.getDirectors() != null && film.getDirectors().size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (Director director : film.getDirectors()) {
+                sb.append("(").append(director.getId()).append(",").append(film.getId()).append("),");
             }
+            System.out.println(sb.substring(0, sb.length() - 1));
+            jdbcTemplate.update(INSERT_SQL + sb.substring(0, sb.length() - 1));
         }
     }
 

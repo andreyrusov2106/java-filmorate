@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.director.DirectorFilmDbStorage;
@@ -177,7 +178,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Long id) {
-        return jdbcTemplate.queryForObject(SELECT_FILM_BY_ID_SQL, this::mapRowToFilm, id);
+        try {
+            return jdbcTemplate.queryForObject(SELECT_FILM_BY_ID_SQL, this::mapRowToFilm, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Film with id=" + id + " not found");
+        }
     }
 
     @Override
