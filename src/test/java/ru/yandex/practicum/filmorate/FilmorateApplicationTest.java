@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
+import ru.yandex.practicum.filmorate.exceptions.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
@@ -130,12 +131,11 @@ class FilmorateApplicationTest {
     @Test
     @Sql({"/schema.sql", "/data.sql", "/test-data.sql"})
     public void testFindFilmByWrongId() {
-
-        final EmptyResultDataAccessException exception = assertThrows(
-                EmptyResultDataAccessException.class,
+        final ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> filmStorage.getFilm(2100L)
         );
-        assertEquals("Incorrect result size: expected 1, actual 0", exception.getMessage());
+        assertEquals("Film with id= " + 2100L + " not found", exception.getMessage());
     }
 
     @Test
