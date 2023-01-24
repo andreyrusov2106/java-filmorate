@@ -12,7 +12,7 @@
 * genres - жанры фильмов
 
 ## Технологический стек:
-Java, Spring, Hibernate,PostgreSQL 
+Java 11, Spring, Hibernate,PostgreSQL 
 
 Проект является практической работой по курсу Яндекс.Практикум.Java-разработчик.
 
